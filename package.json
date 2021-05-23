@@ -1,0 +1,27 @@
+{
+  "name": "todo-list",
+  "version": "1.0.0",
+  "description": "Todo List app",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abryant10/Todo-List.git"
+  },
+  "keywords": [],
+  "author": "alex_bryant",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abryant10/Todo-List/issues"
+  },
+  "homepage": "https://github.com/abryant10/Todo-List#readme",
+  "dependencies": {
+    "date-fns": "^2.21.3"
+  },
+  "devDependencies": {
+    "webpack-cli": "^4.7.0"
+  }
+}
