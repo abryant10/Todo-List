@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styles/styles.css" type="text/css">
+    <title>Todo list app</title>
+</head>
+<body>
+<div class="viewport">
+    <header>Todo List</header>
+    <div class="navBodyContainer">
+        <div class="navContainer">
+            <div class="nav">
+                <button type="button" class="navButton">All</button>
+                <button type="button" class="navButton">Due Today</button>
+            </div>
+            <div class="divider">Lists
+                <button type="button" class="addListButton">+</button>
+            </div>
+            <div class="nav listNav"></div>
+        </div>
+        <div class="taskViewerContainer">
+            <div class="taskViewerNav">
+                    <label for="sortTask">Sort by</label>
+                    <select name="sortTask" id="sortBySelector">
+                        <option value="priority">Priority</option>
+                        <option value="due-date">Due Date</option>
+                        <option value="date-created">Date Created</option>
+                    </select>
+            </div>
+            <div class="taskViewer">YOU HAVE NO TASKS!!!
+                <div class="taskFormContainer">
+                    <form class="taskForm">
+                        <span class="formTopRow">
+                            <input type="text" id="taskText" name="taskText">
+                            <label for="taskDueDate">Due:</label>
+                            <input type="date" id="taskDueDate" name="taskDueDate">  
+                        </span>
+                        <label for="taskNotes">Notes:</label>
+                        <textarea id="taskNotes" name="taskNotes">...</textarea> 
+                        <label for="listSelector">List</label>
+                        <select name="listSelector" id="listSelector"></select>         
+                    </form>
+                </div>
+                <div class="newTaskButtonContainer">
+                    <button type="button" class="navButton newTaskButton">+ New Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        Created by Alex Bryant&nbsp;
+        <a href="https://github.com/abryant10">
+            <img src="/dist/styles/GitHub-Mark-Light-120px-plus.png" alt="git hub mark" height="20" width="20">
+        </a>
+    </footer>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
