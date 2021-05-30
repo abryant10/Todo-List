@@ -1,5 +1,3 @@
-console.log("test 1");
-
 // storage
 let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
 
@@ -24,15 +22,34 @@ const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
 function taskFormSubmit (e) {
     e.preventDefault();
     var taskText = (this.querySelector('[name=taskText]')).value;
+    if (taskText == "") return;
     const taskDueDate = (this.querySelector('[name=taskDueDate]')).value;
     const taskNotes = (this.querySelector('[name=taskNotes]')).value;
     const taskList = (this.querySelector('[name=listSelector]')).value;
-    var task = Task(taskText, taskList, taskNotes, taskDueDate, 1, 1);
+    var priority = checkListPriority(taskList);
+    var task = Task(taskText, taskList, taskNotes, taskDueDate, (taskStorage.length + 1), priority);
     taskStorage.push(task);
     localStorage.setItem("taskStorage", JSON.stringify(taskStorage));
     renderTaskView();    
     taskFormContainer.style.display = "none";
     this.reset();
+}
+function checkListPriority (list) {
+    const listFilter = taskStorage.filter(task => task.list == list);
+    console.log(listFilter);
+    const priority = (listFilter.length +1);
+    return {priority};
+}
+
+function listFormSubmit (e) {
+    e.preventDefault();
+    var newList = addListText.value;
+    listStorage.push(newList);
+    this.reset();
+    this.style.display = "none";
+    localStorage.setItem("listStorage", JSON.stringify(listStorage));
+    renderListsToForm();
+    renderListView();
 }
 
 function renderTaskView () {
@@ -43,6 +60,9 @@ function renderTaskView () {
 // -------------- dom listeners -----------------
 
 const addListButton = document.querySelector(".addListButton");
+const addListForm = document.querySelector(".addListForm");
+const addListText = document.getElementById("addListText");
+const listNav = document.querySelector(".listNav");
 const newTaskButton = document.querySelector(".newTaskButton");
 const sortBySelector = document.getElementById("sortBySelector");
 const taskFormContainer = document.querySelector(".taskFormContainer");
@@ -52,7 +72,8 @@ const listSelector = document.getElementById('listSelector');
 const taskViewRenderDiv = document.querySelector('.taskViewRenderDiv');
 
 
-addListButton.addEventListener("click", createNewList);
+addListButton.addEventListener("click", createNewListForm);
+addListForm.addEventListener('submit', listFormSubmit);
 newTaskButton.addEventListener("click", createTaskForm);
 sortBySelector.addEventListener("change", () => {console.log(sortBySelector.value)});
 taskForm.addEventListener('submit', taskFormSubmit); 
@@ -61,13 +82,6 @@ window.addEventListener('keydown', function(e) {
     resetTaskForm();
   }
 })
-// window.addEventListener("keydown", function(e) {
-//     if (taskFormContainer.style.display == "block" && e.key === "Enter") {
-//         taskFormSubmit(taskForm);
-//     }
-// })
-
-
 
 
 
@@ -79,14 +93,15 @@ function createTaskForm () {
     taskFormContainer.style.display = "block";    
 }
 
-function createNewList () {
-    console.log ("new list yay");
+function createNewListForm () {
+    addListForm.style.display = "block";
 }
 function resetTaskForm () {
     taskForm.reset();
     taskFormContainer.style.display = "none";
 }
 function renderListsToForm () {
+    listSelector.innerHTML = "";
     listStorage.forEach(listIndex => {
         var listOption = document.createElement('option');
         listOption.value = `${listIndex}`;
@@ -94,21 +109,60 @@ function renderListsToForm () {
         listSelector.appendChild(listOption);
     })
 }
+function renderListView () {
+    listNav.innerHTML = "";
+    listStorage.forEach(listIndex => {
+        var listButton = document.createElement("button");
+        listButton.innerHTML = `${listIndex}`;
+        listButton.classList.add("navButton");
+        listNav.appendChild(listButton);
+    })
+}
 
 //------------------ 
 renderListsToForm();
 renderTaskView();
+renderListView();
 
-// - list creation tab
-// - ability to change priority
-// - update title by clicking on it
-// - have checked off items go to deleted list
-// - all is the top inbox
-// - you start with a default remidners list
-// - add a today box
-//     - today box sorts by project
-// - add a color picker for lists
-// -listen for new list and reredner list to form and list nav
+
+
+
+
+// to do next 
+    //sort out submiting both forms beyond 'submit'
+    //make task UI 
+
+
+// -list creation tab
+    // - add delele to lists
+        // all tasks with list will be deleted
+    // - add move lists up and down
+    // - add color picker for list
+
+// -task editing
+    // - ability to change priority
+    // - update title by clicking on it
+    // - have checked off items go to deleted list
+
+
+//task filtering
+    // - all is the top inbox
+    // - add a today box
+//     //- today box sorts by project
+
+
+
+
+
+
+
+
+
+window.addEventListener("keydown", function(e) {
+    if (taskFormContainer.style.display == "block" && e.key === "Enter") {
+        taskForm.Submit();
+    }
+})
 
 
 // When the user clicks anywhere outside of the taskform, 
