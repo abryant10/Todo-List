@@ -63,6 +63,9 @@ header {
     background-color: rgb(180, 180, 180);
     cursor: pointer;
 }
+.addListForm {
+    display: none;
+}
 .divider {
     width: 90%;
     margin-left: 4%;
