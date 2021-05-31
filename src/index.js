@@ -19,26 +19,24 @@ const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
 }
 
 
-function taskFormSubmit (e) {
-    e.preventDefault();
-    var taskText = (this.querySelector('[name=taskText]')).value;
+function taskFormSubmit () {
+    var taskText = (taskForm.querySelector('[name=taskText]')).value;
     if (taskText == "") return;
-    const taskDueDate = (this.querySelector('[name=taskDueDate]')).value;
-    const taskNotes = (this.querySelector('[name=taskNotes]')).value;
-    const taskList = (this.querySelector('[name=listSelector]')).value;
-    var priority = checkListPriority(taskList);
-    var task = Task(taskText, taskList, taskNotes, taskDueDate, (taskStorage.length + 1), priority);
+    const taskDueDate = (taskForm.querySelector('[name=taskDueDate]')).value;
+    const taskNotes = (taskForm.querySelector('[name=taskNotes]')).value;
+    const taskList = (taskForm.querySelector('[name=listSelector]')).value;
+    var priority = (checkListPriority(taskList));
+    var task = Task(taskText, taskList, taskNotes, taskDueDate, priority, (taskStorage.length + 1));
     taskStorage.push(task);
     localStorage.setItem("taskStorage", JSON.stringify(taskStorage));
     renderTaskView();    
     taskFormContainer.style.display = "none";
-    this.reset();
+    taskForm.reset();
 }
 function checkListPriority (list) {
     const listFilter = taskStorage.filter(task => task.list == list);
-    console.log(listFilter);
     const priority = (listFilter.length +1);
-    return {priority};
+    return priority;
 }
 
 function listFormSubmit (e) {
@@ -74,9 +72,16 @@ const taskViewRenderDiv = document.querySelector('.taskViewRenderDiv');
 
 addListButton.addEventListener("click", createNewListForm);
 addListForm.addEventListener('submit', listFormSubmit);
-newTaskButton.addEventListener("click", createTaskForm);
+newTaskButton.addEventListener("click", () => {
+    taskFormSubmit();
+    createTaskForm();
+    
+});
 sortBySelector.addEventListener("change", () => {console.log(sortBySelector.value)});
-taskForm.addEventListener('submit', taskFormSubmit); 
+taskForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    taskFormSubmit();
+}); 
 window.addEventListener('keydown', function(e) {
   if (e.key === "Escape") {
     resetTaskForm();
@@ -121,7 +126,7 @@ function renderListView () {
 
 //------------------ 
 renderListsToForm();
-renderTaskView();
+//renderTaskView();
 renderListView();
 
 
@@ -129,8 +134,8 @@ renderListView();
 
 
 // to do next 
-    //sort out submiting both forms beyond 'submit'
     //make task UI 
+    //fix website it too wide
 
 
 // -list creation tab
@@ -160,7 +165,7 @@ renderListView();
 
 window.addEventListener("keydown", function(e) {
     if (taskFormContainer.style.display == "block" && e.key === "Enter") {
-        taskForm.Submit();
+        taskFormSubmit();
     }
 })
 

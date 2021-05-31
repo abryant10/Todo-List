@@ -31,7 +31,31 @@
                     </select>
             </div>
             <div class="taskViewer">
-                <div class="taskViewRenderDiv"></div>
+                <div class="taskViewRenderDiv">
+                    <div class="taskCard">
+                        <div class="TCTop">
+                            <div class="TCTopLeft">
+                                <input type="checkbox" class="TCCheck">
+                                <input type="text" class="TCTitle" value="//task title goes here">
+                            </div>
+                            <div class="TCTopRight">
+                                <input type="date" class="TCDate">
+                                <div class="TCPriorityButtonContainer">
+                                    <button class="TCPriorUp">&#9650</button>
+                                    <button class="TCPriorDown">&#9660</button>
+                                </div>
+                                <button class="TCDelete">X</button>
+                            </div>
+                        </div>
+                        <div class="TCMiddle">
+                            <button class="TCExpand">i</button>
+                        </div>
+                        <div class="TCBottom">
+                            <textarea class="TCNotes">//task notes goes here</textarea>
+                            <p class="TCList">//task list goes here</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="taskFormContainer">
                     <form class="taskForm">
                         <span class="formTopRow">
@@ -62,3 +86,6 @@
 <script src="main.js"></script>
 </body>
 </html>
+
+
+
