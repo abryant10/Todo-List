@@ -3,6 +3,8 @@ let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
 
 let listStorage = JSON.parse(localStorage.getItem('listStorage')) || ["Reminders"];
 
+let currentView = JSON.parse(localStorage.getItem('currentView')) || "Reminders";
+
 // ------------task factory-----------------------------
 
 const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
@@ -50,11 +52,6 @@ function listFormSubmit (e) {
     renderListView();
 }
 
-function renderTaskView () {
-    taskViewRenderDiv.innerHTML = JSON.stringify(taskStorage);
-}
-
-
 // -------------- dom listeners -----------------
 
 const addListButton = document.querySelector(".addListButton");
@@ -75,7 +72,7 @@ addListForm.addEventListener('submit', listFormSubmit);
 newTaskButton.addEventListener("click", () => {
     taskFormSubmit();
     createTaskForm();
-    
+    taskText.focus();
 });
 sortBySelector.addEventListener("change", () => {console.log(sortBySelector.value)});
 taskForm.addEventListener('submit', (event) => {
@@ -85,6 +82,7 @@ taskForm.addEventListener('submit', (event) => {
 window.addEventListener('keydown', function(e) {
   if (e.key === "Escape") {
     resetTaskForm();
+    resetListForm();
   }
 })
 
@@ -100,10 +98,15 @@ function createTaskForm () {
 
 function createNewListForm () {
     addListForm.style.display = "block";
+    addListText.focus();
 }
 function resetTaskForm () {
     taskForm.reset();
     taskFormContainer.style.display = "none";
+}
+function resetListForm () {
+    addListForm.reset();
+    addListForm.style.display = "none";
 }
 function renderListsToForm () {
     listSelector.innerHTML = "";
@@ -123,10 +126,51 @@ function renderListView () {
         listNav.appendChild(listButton);
     })
 }
+function clearTaskView () {
+    while(taskViewRenderDiv.firstChild) {
+        taskViewRenderDiv.removeChild(taskViewRenderDiv.lastChild);
+    }
+}
+
+
+function renderTaskView () {
+    //const renderArray = getRenderArray();
+    clearTaskView();
+    const renderArray = taskStorage; // change this 
+    renderArray.forEach(task => { 
+        newTaskCard = document.createElement('div');
+        newTaskCard.classList.add('taskCard');
+        newTaskCard.setAttribute('data-index', `${task.allPriority}`);
+        newTaskCard.innerHTML = `    
+            <div class="TCTop">
+                <div class="TCTopLeft">
+                    <input type="checkbox" class="TCCheck">
+                    <input type="text" class="TCTitle" value="${task.title}">
+                </div>
+                <div class="TCTopRight">
+                    <input type="date" class="TCDate" value="${task.dueDate}">
+                    <div class="TCPriorityButtonContainer">
+                        <button class="TCPriorUp">&#9650</button>
+                        <button class="TCPriorDown">&#9660</button>
+                    </div>
+                    <button class="TCDelete">X</button>
+                </div>
+            </div>
+            <div class="TCMiddle">
+                <button class="TCExpand">i</button>
+            </div>
+            <div class="TCBottom">
+                <textarea class="TCNotes">${task.notes}</textarea>
+                <p class="TCList">${task.list}</p>
+            </div>`
+        
+        taskViewRenderDiv.appendChild(newTaskCard);
+    });
+}
 
 //------------------ 
 renderListsToForm();
-//renderTaskView();
+renderTaskView();
 renderListView();
 
 
@@ -134,13 +178,18 @@ renderListView();
 
 
 // to do next 
+    //check out 4th down buttons 
+    // make delete list work
     //make task UI 
-    //fix website it too wide
+        // delete task
+        // expand info
+        // up and down priorotiy
 
 
 // -list creation tab
     // - add delele to lists
         // all tasks with list will be deleted
+    // - logic for form to go away with click
     // - add move lists up and down
     // - add color picker for list
 
@@ -155,6 +204,8 @@ renderListView();
     // - add a today box
 //     //- today box sorts by project
 
+//moblie friendly menu and formating
+// check for really long list names and long task names
 
 
 
