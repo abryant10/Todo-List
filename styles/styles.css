@@ -13,10 +13,10 @@ body {
     height: 100%;
 }
 header {
+    display: flex;
+    padding: 15px;
     background-color: rgb(58, 84, 153);
     color: white;
-    padding: 15px;
-    padding-left: 70px;
     font-size: 60px;
 }
 .navBodyContainer {
@@ -66,6 +66,14 @@ header {
 .addListForm {
     display: none;
 }
+.addListText {
+    margin-top: 10px;
+    margin-left: 40px;
+    width: 130px;
+    border: none;
+    border-radius: 5px;
+}
+
 .divider {
     width: 90%;
     margin-left: 4%;
@@ -76,25 +84,76 @@ header {
     font-weight: 600;
 }
 .taskViewerContainer {
-    width: 100%;
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+
 } 
 .taskViewerNav {
-    width: 100%;
+    display: flex;
     padding: 20px;
+
 }
 .taskViewer {
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-items: center;
-    align-items: center;
+    margin-left: 40px;
 }
 .taskFormContainer {
     display: none;
 }
+.taskCard {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+    max-width: 600px;
+    margin: 15px;
+    margin-right: 130px;
 
+}
+.TCTop {
+    display: flex;
+    flex-direction: row;
+}
+.TCTopLeft {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+}
+.TCCheck {
+    
+}
+.TCTitle {
+    border: none;
+    margin-left: 5px;
+    font-size: 30px;
+}
+.TCTopRight {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: flex-end;
+}
+.TCBottom {
+    display: none;
+}
+.TCPriorityButtonContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.TCMiddle {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.newTaskButton {
+    margin-bottom: 200px;
+}
 footer {
-   flex-grow: 1;
    position: fixed;
    left: 0;
    bottom: 0;

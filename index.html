@@ -6,7 +6,7 @@
 </head>
 <body>
 <div class="viewport">
-    <header>Todo List</header>
+    <header>To Do List &#9745;</header>
     <div class="navBodyContainer">
         <div class="navContainer">
             <div class="nav">
@@ -17,7 +17,7 @@
                 <button type="button" class="addListButton">+</button>
             </div>
             <form class="addListForm">
-                <input type="text" id="addListText" name="addListText">
+                <input type="text" id="addListText" name="addListText" class="addListText">
             </form>
             <div class="nav listNav"></div>
         </div>
@@ -31,32 +31,8 @@
                     </select>
             </div>
             <div class="taskViewer">
-                <div class="taskViewRenderDiv">
-                    <div class="taskCard">
-                        <div class="TCTop">
-                            <div class="TCTopLeft">
-                                <input type="checkbox" class="TCCheck">
-                                <input type="text" class="TCTitle" value="//task title goes here">
-                            </div>
-                            <div class="TCTopRight">
-                                <input type="date" class="TCDate">
-                                <div class="TCPriorityButtonContainer">
-                                    <button class="TCPriorUp">&#9650</button>
-                                    <button class="TCPriorDown">&#9660</button>
-                                </div>
-                                <button class="TCDelete">X</button>
-                            </div>
-                        </div>
-                        <div class="TCMiddle">
-                            <button class="TCExpand">i</button>
-                        </div>
-                        <div class="TCBottom">
-                            <textarea class="TCNotes">//task notes goes here</textarea>
-                            <p class="TCList">//task list goes here</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="taskFormContainer">
+                <div class="taskViewRenderDiv"></div>
+                <div class="taskFormContainer"> 
                     <form class="taskForm">
                         <span class="formTopRow">
                             <input type="text" id="taskText" name="taskText">
@@ -86,6 +62,5 @@
 <script src="main.js"></script>
 </body>
 </html>
-
 
 
