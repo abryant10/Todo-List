@@ -1,9 +1,11 @@
+const { et } = require("date-fns/locale");
+
 // storage
 let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
 
 let listStorage = JSON.parse(localStorage.getItem('listStorage')) || ["Reminders"];
 
-let currentView = JSON.parse(localStorage.getItem('currentView')) || "Reminders";
+let currentView =  "all";
 
 // ------------task factory-----------------------------
 
@@ -28,7 +30,7 @@ function taskFormSubmit () {
     const taskNotes = (taskForm.querySelector('[name=taskNotes]')).value;
     const taskList = (taskForm.querySelector('[name=listSelector]')).value;
     var priority = (checkListPriority(taskList));
-    var task = Task(taskText, taskList, taskNotes, taskDueDate, priority, (taskStorage.length + 1));
+    var task = Task(taskText, taskList, taskNotes, taskDueDate, priority, (taskStorage.length));
     taskStorage.push(task);
     localStorage.setItem("taskStorage", JSON.stringify(taskStorage));
     renderTaskView();    
@@ -47,16 +49,49 @@ function listFormSubmit (e) {
     listStorage.push(newList);
     this.reset();
     this.style.display = "none";
-    localStorage.setItem("listStorage", JSON.stringify(listStorage));
+    setTaskStorage();
     renderListsToForm();
     renderListView();
 }
+function setTaskStorage () {
+    localStorage.setItem("taskStorage", JSON.stringify(taskStorage));
+}
 
+function deleteTask (e) {
+    if (!e.target.matches(".TCDelete")) return;
+    taskStorage.splice((e.target.dataset.index), 1);
+    updateAllPriority();
+    setTaskStorage();
+    renderTaskView(currentView);
+}
+
+function updateAllPriority () {
+    taskStorage.forEach(task => {
+        task.allPriority = (taskStorage.indexOf(task));
+    }) 
+}
+function listButtonClicked (e) {
+    if(!e.target.matches(".navButton")) return;
+    currentView = e.target.innerHTML;
+    renderTaskView(currentView);
+}
+function getRenderArray (list) {
+    var sortVal = sortBySelector.value;
+    if(list == "all") {
+        renderArray = taskStorage
+    }// switch statement with three soty bys. each filtering list and sorting
+    return renderArray;
+}
+function allButtonClicked () {
+    currentView = "all"
+    renderTaskView("all");
+}
 // -------------- dom listeners -----------------
 
 const addListButton = document.querySelector(".addListButton");
 const addListForm = document.querySelector(".addListForm");
 const addListText = document.getElementById("addListText");
+const allButton = document.getElementById("allButton")
 const listNav = document.querySelector(".listNav");
 const newTaskButton = document.querySelector(".newTaskButton");
 const sortBySelector = document.getElementById("sortBySelector");
@@ -66,7 +101,10 @@ const taskText = document.getElementById("taskText");
 const listSelector = document.getElementById('listSelector');
 const taskViewRenderDiv = document.querySelector('.taskViewRenderDiv');
 
-
+listNav.addEventListener("click", listButtonClicked);
+allButton.addEventListener('click', allButtonClicked);
+taskViewRenderDiv.addEventListener("click", deleteTask);
+taskViewRenderDiv.addEventListener("click", expandCardInfo);
 addListButton.addEventListener("click", createNewListForm);
 addListForm.addEventListener('submit', listFormSubmit);
 newTaskButton.addEventListener("click", () => {
@@ -85,11 +123,26 @@ window.addEventListener('keydown', function(e) {
     resetListForm();
   }
 })
-
+window.addEventListener("keydown", function(e) {
+    if (taskFormContainer.style.display == "block" && e.key === "Enter") {
+        taskFormSubmit();
+    }
+})
 
 
 
 //--------------- dom editors -----------------------
+function expandCardInfo (e) {
+    if (!e.target.matches(".TCExpand")) return;
+    var index = e.target.dataset.info;
+    var target = e.currentTarget;
+    var targetBottom = target.querySelector(`[data-expand="${index}"]`)
+    if(targetBottom.classList.contains("expandedInfo")) {
+        targetBottom.classList.remove("expandedInfo");
+    } else {
+        targetBottom.classList.add("expandedInfo");
+    }
+}    
 
 function createTaskForm () {
     taskForm.reset();
@@ -133,14 +186,13 @@ function clearTaskView () {
 }
 
 
-function renderTaskView () {
-    //const renderArray = getRenderArray();
+function renderTaskView (list) {
+    var renderArray = getRenderArray(list); //function that takes list from button and adds in filter to produce array for rendering
     clearTaskView();
-    const renderArray = taskStorage; // change this 
+    //const renderArray = list; // change this 
     renderArray.forEach(task => { 
         newTaskCard = document.createElement('div');
         newTaskCard.classList.add('taskCard');
-        newTaskCard.setAttribute('data-index', `${task.allPriority}`);
         newTaskCard.innerHTML = `    
             <div class="TCTop">
                 <div class="TCTopLeft">
@@ -153,13 +205,13 @@ function renderTaskView () {
                         <button class="TCPriorUp">&#9650</button>
                         <button class="TCPriorDown">&#9660</button>
                     </div>
-                    <button class="TCDelete">X</button>
+                    <button class="TCDelete" data-index="${task.allPriority}">X</button>
                 </div>
             </div>
             <div class="TCMiddle">
-                <button class="TCExpand">i</button>
+                <button class="TCExpand" data-info="${task.allPriority}">i</button>
             </div>
-            <div class="TCBottom">
+            <div class="TCBottom" data-expand="${task.allPriority}">
                 <textarea class="TCNotes">${task.notes}</textarea>
                 <p class="TCList">${task.list}</p>
             </div>`
@@ -168,23 +220,25 @@ function renderTaskView () {
     });
 }
 
-//------------------ 
-renderListsToForm();
-renderTaskView();
-renderListView();
 
+//----------------------- 
+renderListsToForm();
+renderListView();
+renderTaskView("all");
 
 
 
 
 // to do next 
-    //check out 4th down buttons 
+    // make list filtering work
     // make delete list work
     //make task UI 
-        // delete task
-        // expand info
         // up and down priorotiy
 
+// -task editing
+    // - ability to change priority
+    // - update title by clicking on it
+    // - have checked off items go to deleted list
 
 // -list creation tab
     // - add delele to lists
@@ -193,32 +247,17 @@ renderListView();
     // - add move lists up and down
     // - add color picker for list
 
-// -task editing
-    // - ability to change priority
-    // - update title by clicking on it
-    // - have checked off items go to deleted list
-
-
 //task filtering
     // - all is the top inbox
     // - add a today box
+    // - add a completed box
 //     //- today box sorts by project
 
 //moblie friendly menu and formating
 // check for really long list names and long task names
+// add tool tips to buttons
 
 
-
-
-
-
-
-
-window.addEventListener("keydown", function(e) {
-    if (taskFormContainer.style.display == "block" && e.key === "Enter") {
-        taskFormSubmit();
-    }
-})
 
 
 // When the user clicks anywhere outside of the taskform, 
