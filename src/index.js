@@ -1,4 +1,4 @@
-const { et } = require("date-fns/locale");
+//const { et } = require("date-fns/locale");
 
 // storage
 let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
@@ -33,7 +33,7 @@ function taskFormSubmit () {
     var task = Task(taskText, taskList, taskNotes, taskDueDate, priority, (taskStorage.length));
     taskStorage.push(task);
     localStorage.setItem("taskStorage", JSON.stringify(taskStorage));
-    renderTaskView();    
+    renderTaskView(currentView);    
     taskFormContainer.style.display = "none";
     taskForm.reset();
 }
@@ -73,18 +73,76 @@ function updateAllPriority () {
 function listButtonClicked (e) {
     if(!e.target.matches(".navButton")) return;
     currentView = e.target.innerHTML;
+    console.log(currentView);
     renderTaskView(currentView);
+    renderListsToForm();
 }
 function getRenderArray (list) {
     var sortVal = sortBySelector.value;
-    if(list == "all") {
-        renderArray = taskStorage
-    }// switch statement with three soty bys. each filtering list and sorting
+    let filteredArray;
+    let today = new Date().toISOString().split('T')[0];
+    switch (list) {
+        case ("all"): 
+            switch (sortVal) {
+                case ("priority"):
+                    renderArray = taskStorage.slice().sort((a, b) => a.allPriority - b.allPriority); 
+                    break;
+                case ("due-date"):
+                    //renderArray = taskStorage.slice().sort((a, b) => a.dueDate - b.dueDate); 
+                    break;
+                case ("date-created"):
+                    //code
+            }
+            break;
+        case ("today"):
+            switch (sortVal) {
+                case ("priority"):
+                    filteredArray = taskStorage.filter(task => task.dueDate == today);
+                    renderArray = filteredArray.slice().sort((a, b) => a.allPriority - b.allPriority);
+                    break;
+                case ("due-date"):
+                    //code
+                    break;
+                case ("date-created"):
+                    //code
+            }
+        break;
+        case ("completed"):
+            switch (sortVal) {
+                case ("priority"):
+                    filteredArray = taskStorage.filter(task => task.activeStatus == false);
+                    renderArray = filteredArray.slice().sort((a, b) => a.allPriority - b.allPriority);
+                    break;
+                case ("due-date"):
+                    //code
+                    break;
+                case ("date-created"):
+                    //code
+            }
+        break;
+        default: 
+        switch (sortVal) {
+            case ("priority"):
+                filteredArray = taskStorage.filter(task => task.list == list);
+                renderArray = filteredArray.slice().sort((a, b) => a.listPriority - b.listPriority);
+                break;
+            case ("due-date"):
+                //code
+                break;
+            case ("date-created"):
+                //code
+        }
+    }
     return renderArray;
 }
 function allButtonClicked () {
     currentView = "all"
     renderTaskView("all");
+}
+
+function todayButtonClicked () {
+    currentView = "today";
+    renderTaskView("today");
 }
 // -------------- dom listeners -----------------
 
@@ -92,6 +150,7 @@ const addListButton = document.querySelector(".addListButton");
 const addListForm = document.querySelector(".addListForm");
 const addListText = document.getElementById("addListText");
 const allButton = document.getElementById("allButton")
+const todayButton = document.getElementById("todayButton");
 const listNav = document.querySelector(".listNav");
 const newTaskButton = document.querySelector(".newTaskButton");
 const sortBySelector = document.getElementById("sortBySelector");
@@ -103,6 +162,7 @@ const taskViewRenderDiv = document.querySelector('.taskViewRenderDiv');
 
 listNav.addEventListener("click", listButtonClicked);
 allButton.addEventListener('click', allButtonClicked);
+todayButton.addEventListener('click', todayButtonClicked);
 taskViewRenderDiv.addEventListener("click", deleteTask);
 taskViewRenderDiv.addEventListener("click", expandCardInfo);
 addListButton.addEventListener("click", createNewListForm);
@@ -112,7 +172,7 @@ newTaskButton.addEventListener("click", () => {
     createTaskForm();
     taskText.focus();
 });
-sortBySelector.addEventListener("change", () => {console.log(sortBySelector.value)});
+sortBySelector.addEventListener("change", () => {renderTaskView(currentView);});
 taskForm.addEventListener('submit', (event) => {
     event.preventDefault();
     taskFormSubmit();
@@ -146,6 +206,7 @@ function expandCardInfo (e) {
 
 function createTaskForm () {
     taskForm.reset();
+    renderListsToForm();
     taskFormContainer.style.display = "block";    
 }
 
@@ -164,10 +225,18 @@ function resetListForm () {
 function renderListsToForm () {
     listSelector.innerHTML = "";
     listStorage.forEach(listIndex => {
-        var listOption = document.createElement('option');
-        listOption.value = `${listIndex}`;
-        listOption.innerHTML = `${listIndex}`;
-        listSelector.appendChild(listOption);
+        if (listIndex == currentView){
+            var listOption = document.createElement('option');
+            var listOption = document.createElement('option');
+            listOption.innerHTML = `${listIndex}`;
+            listOption.selected = "selected";
+            listSelector.appendChild(listOption);
+        }else {
+            var listOption = document.createElement('option');
+            listOption.value = `${listIndex}`;
+            listOption.innerHTML = `${listIndex}`;
+            listSelector.appendChild(listOption);
+        }
     })
 }
 function renderListView () {
@@ -187,9 +256,8 @@ function clearTaskView () {
 
 
 function renderTaskView (list) {
-    var renderArray = getRenderArray(list); //function that takes list from button and adds in filter to produce array for rendering
+    var renderArray = getRenderArray(list); 
     clearTaskView();
-    //const renderArray = list; // change this 
     renderArray.forEach(task => { 
         newTaskCard = document.createElement('div');
         newTaskCard.classList.add('taskCard');
