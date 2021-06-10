@@ -27,11 +27,10 @@ function taskFormSubmit () {
     var taskText = (taskForm.querySelector('[name=taskText]')).value;
     if (taskText == "") return;
     const taskDueDate = (taskForm.querySelector('[name=taskDueDate]')).value;
-    const taskDueDateObj = new Date(taskDueDate);
     const taskNotes = (taskForm.querySelector('[name=taskNotes]')).value;
     const taskList = (taskForm.querySelector('[name=listSelector]')).value;
     var priority = (checkListPriority(taskList));
-    var task = Task(taskText, taskList, taskNotes, taskDueDateObj, priority, (taskStorage.length));
+    var task = Task(taskText, taskList, taskNotes, taskDueDate, priority, (taskStorage.length));
     taskStorage.push(task);
     setTaskStorage();
     renderTaskView(currentView);    
@@ -94,7 +93,6 @@ function updateAllPriority () {
 function listButtonClicked (e) {
     if(!e.target.matches(".listButton")) return;
     currentView = e.target.innerHTML;
-    console.log(currentView);
     renderTaskView(currentView);
     renderListsToForm();
 }
@@ -172,7 +170,46 @@ function todayButtonClicked () {
     currentView = "today";
     renderTaskView("today");
 }
-// -------------- dom listeners -----------------
+function priorityUp (e) {
+    if (!e.target.matches(".priorUp")) return;
+    if (e.target.dataset.index == 0) return;
+    if(currentView == "all"){
+        var index = parseInt(e.target.dataset.index);
+        taskStorage.forEach(task => {
+            if(task.allPriority < (index - 1)) return;
+            if(task.allPriority > (index)) return;
+            if(task.allPriority == (index - 1)) {
+                task.allPriority++;
+            } else if (task.allPriority == index) {
+                task.allPriority--;
+            }
+        }) 
+    }
+    taskStorage = taskStorage.sort((a, b) => a.allPriority - b.allPriority);
+    setTaskStorage();
+    renderTaskView(currentView);
+}
+function priorityDown (e) {
+    if (!e.target.matches(".priorDown")) return;
+    if (e.target.dataset.index == (taskStorage.length - 1)) return;
+    if(currentView == "all"){
+        var index = parseInt(e.target.dataset.index);
+        taskStorage.forEach(task => {
+            if(task.allPriority < (index)) return;
+            if(task.allPriority > (index + 1)) return;
+            if(task.allPriority == (index)) {
+                task.allPriority++;
+            } else if (task.allPriority == (index + 1)) {
+                task.allPriority--;
+            }
+        }) 
+    }
+    taskStorage = taskStorage.sort((a, b) => a.allPriority - b.allPriority);
+    setTaskStorage();
+    renderTaskView(currentView);
+}
+
+// -------------- dom listeners ----------------------------------------------------
 
 const addListButton = document.querySelector(".addListButton");
 const addListForm = document.querySelector(".addListForm");
@@ -199,6 +236,8 @@ noDeleteList.addEventListener("click", clearDeleteList);
 allButton.addEventListener('click', allButtonClicked);
 todayButton.addEventListener('click', todayButtonClicked);
 taskViewRenderDiv.addEventListener("click", deleteTask);
+taskViewRenderDiv.addEventListener("click", priorityUp);
+taskViewRenderDiv.addEventListener("click", priorityDown);
 taskViewRenderDiv.addEventListener("click", expandCardInfo);
 addListButton.addEventListener("click", createNewListForm);
 addListForm.addEventListener('submit', listFormSubmit);
@@ -313,8 +352,8 @@ function renderTaskView (list) {
                 <div class="TCTopRight">
                     <input type="date" class="TCDate" value="${task.dueDate}">
                     <div class="TCPriorityButtonContainer">
-                        <button class="TCButton TCPriorButton">&#9650</button>
-                        <button class="TCButton TCPriorButton">&#9660</button>
+                        <button class="TCButton TCPriorButton priorUp" data-index="${task.allPriority}">&#9650</button>
+                        <button class="TCButton TCPriorButton priorDown" data-index="${task.allPriority}">&#9660</button>
                     </div>
                     <button class="TCButton TCDelete" data-index="${task.allPriority}">X</button>
                 </div>
@@ -328,7 +367,6 @@ function renderTaskView (list) {
                 <p>List:</p>
                 <p class="TCList">${task.list}</p>
             </div>`
-        
         taskViewRenderDiv.appendChild(newTaskCard);
     });
 }
@@ -344,7 +382,7 @@ renderTaskView("all");
 
 // to do next 
     
-    // up and down priorotiy
+    // up and down priorotiy in list vieww
     // edit task title
     // make list filtering work with dates back in webpack
 
@@ -391,3 +429,4 @@ renderTaskView("all");
 //     }
 //     console.log("not the form");
 // }
+
