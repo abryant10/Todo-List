@@ -7,6 +7,7 @@ let listStorage = JSON.parse(localStorage.getItem('listStorage')) || ["Reminders
 
 let currentView =  "all";
 
+
 // ------------task factory-----------------------------
 
 const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
@@ -22,17 +23,17 @@ const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
     }
 }
 
-
 function taskFormSubmit () {
     var taskText = (taskForm.querySelector('[name=taskText]')).value;
     if (taskText == "") return;
     const taskDueDate = (taskForm.querySelector('[name=taskDueDate]')).value;
+    const taskDueDateObj = new Date(taskDueDate);
     const taskNotes = (taskForm.querySelector('[name=taskNotes]')).value;
     const taskList = (taskForm.querySelector('[name=listSelector]')).value;
     var priority = (checkListPriority(taskList));
-    var task = Task(taskText, taskList, taskNotes, taskDueDate, priority, (taskStorage.length));
+    var task = Task(taskText, taskList, taskNotes, taskDueDateObj, priority, (taskStorage.length));
     taskStorage.push(task);
-    localStorage.setItem("taskStorage", JSON.stringify(taskStorage));
+    setTaskStorage();
     renderTaskView(currentView);    
     taskFormContainer.style.display = "none";
     taskForm.reset();
@@ -49,12 +50,15 @@ function listFormSubmit (e) {
     listStorage.push(newList);
     this.reset();
     this.style.display = "none";
-    setTaskStorage();
+    setListStorage();
     renderListsToForm();
     renderListView();
 }
 function setTaskStorage () {
     localStorage.setItem("taskStorage", JSON.stringify(taskStorage));
+}
+function setListStorage () {
+    localStorage.setItem("listStorage", JSON.stringify(listStorage));
 }
 
 function deleteTask (e) {
@@ -64,6 +68,23 @@ function deleteTask (e) {
     setTaskStorage();
     renderTaskView(currentView);
 }
+function deleteList () {
+    listStorage.splice((listStorage.indexOf(listToDelete)), 1);
+    setListStorage();
+    renderListView();
+    renderListsToForm();
+    taskStorage.forEach(task => {
+        if(task.list == listToDelete) {
+            taskStorage.splice(taskStorage.indexOf(task), 1);
+        }
+    })
+    setTaskStorage();
+    renderTaskView();
+    listDeletePopup.style.display = "none";
+}
+function clearDeleteList () {
+    listDeletePopup.style.display = "none";
+}
 
 function updateAllPriority () {
     taskStorage.forEach(task => {
@@ -71,11 +92,18 @@ function updateAllPriority () {
     }) 
 }
 function listButtonClicked (e) {
-    if(!e.target.matches(".navButton")) return;
+    if(!e.target.matches(".listButton")) return;
     currentView = e.target.innerHTML;
     console.log(currentView);
     renderTaskView(currentView);
     renderListsToForm();
+}
+function listDeleteButtonClicked (e) {
+    if(!e.target.matches(".deleteListButton")) return;
+    listToDelete = e.target.dataset.list;
+    listDeletePopup.style.display = "block";
+    listDeleteWarning.innerHTML = `Are you sure you want to delete ${listToDelete} and all of it's tasks?`;
+    return {listToDelete};
 }
 function getRenderArray (list) {
     var sortVal = sortBySelector.value;
@@ -159,8 +187,15 @@ const taskForm = document.querySelector(".taskForm");
 const taskText = document.getElementById("taskText");
 const listSelector = document.getElementById('listSelector');
 const taskViewRenderDiv = document.querySelector('.taskViewRenderDiv');
+const listDeletePopup = document.querySelector(".listDeletePopup");
+const listDeleteWarning = listDeletePopup.querySelector(".listDeleteWarning");
+const yesDeleteList = document.getElementById("yesDeleteList");
+const noDeleteList = document.getElementById("noDeleteList");
 
 listNav.addEventListener("click", listButtonClicked);
+listNav.addEventListener("click", listDeleteButtonClicked);
+yesDeleteList.addEventListener("click", deleteList);
+noDeleteList.addEventListener("click", clearDeleteList);
 allButton.addEventListener('click', allButtonClicked);
 todayButton.addEventListener('click', todayButtonClicked);
 taskViewRenderDiv.addEventListener("click", deleteTask);
@@ -242,10 +277,18 @@ function renderListsToForm () {
 function renderListView () {
     listNav.innerHTML = "";
     listStorage.forEach(listIndex => {
+        var listButtonDiv = document.createElement("div");
+        listButtonDiv.classList.add("navButton");
         var listButton = document.createElement("button");
+        listButton.classList.add("listButton");
         listButton.innerHTML = `${listIndex}`;
-        listButton.classList.add("navButton");
-        listNav.appendChild(listButton);
+        var deleteListButton = document.createElement("button");
+        deleteListButton.innerHTML = "X";
+        deleteListButton.classList.add("deleteListButton");
+        deleteListButton.dataset.list = `${listIndex}`;
+        listNav.appendChild(listButtonDiv);
+        listButtonDiv.appendChild(listButton);
+        listButtonDiv.appendChild(deleteListButton);
     })
 }
 function clearTaskView () {
@@ -265,22 +308,24 @@ function renderTaskView (list) {
             <div class="TCTop">
                 <div class="TCTopLeft">
                     <input type="checkbox" class="TCCheck">
-                    <input type="text" class="TCTitle" value="${task.title}">
+                    <p class="TCTitle">${task.title}</p>
                 </div>
                 <div class="TCTopRight">
                     <input type="date" class="TCDate" value="${task.dueDate}">
                     <div class="TCPriorityButtonContainer">
-                        <button class="TCPriorUp">&#9650</button>
-                        <button class="TCPriorDown">&#9660</button>
+                        <button class="TCButton TCPriorButton">&#9650</button>
+                        <button class="TCButton TCPriorButton">&#9660</button>
                     </div>
-                    <button class="TCDelete" data-index="${task.allPriority}">X</button>
+                    <button class="TCButton TCDelete" data-index="${task.allPriority}">X</button>
                 </div>
             </div>
             <div class="TCMiddle">
-                <button class="TCExpand" data-info="${task.allPriority}">i</button>
+                <button class="TCButton TCExpand" data-info="${task.allPriority}">info</button>
             </div>
             <div class="TCBottom" data-expand="${task.allPriority}">
-                <textarea class="TCNotes">${task.notes}</textarea>
+                <p>Notes:</p>
+                <p class="TCNotes">${task.notes}</p>
+                <p>List:</p>
                 <p class="TCList">${task.list}</p>
             </div>`
         
@@ -298,19 +343,17 @@ renderTaskView("all");
 
 
 // to do next 
-    // make list filtering work
-    // make delete list work
-    //make task UI 
-        // up and down priorotiy
+    
+    // up and down priorotiy
+    // edit task title
+    // make list filtering work with dates back in webpack
 
 // -task editing
     // - ability to change priority
     // - update title by clicking on it
-    // - have checked off items go to deleted list
+    // - have checked off items go to completed list
 
 // -list creation tab
-    // - add delele to lists
-        // all tasks with list will be deleted
     // - logic for form to go away with click
     // - add move lists up and down
     // - add color picker for list
@@ -324,6 +367,7 @@ renderTaskView("all");
 //moblie friendly menu and formating
 // check for really long list names and long task names
 // add tool tips to buttons
+// when clicking away - close and submit list form, colse and submit task form, close all expanded info and rmeove all editable task forms. 
 
 
 

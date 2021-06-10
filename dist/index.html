@@ -6,13 +6,20 @@
 </head>
 <body>
 <div class="viewport">
+    <div class="listDeletePopup">
+        <div class="listDeleteContainer">
+            <div class="listDeleteWarning"></div>
+            <button type="button" class="navButton" id="yesDeleteList">Yes</button>
+            <button type="button" class="navButton" id="noDeleteList">No</button>
+        </div>
+    </div>
     <header>To Do List &#9745;</header>
     <div class="navBodyContainer">
         <div class="navContainer">
             <div class="nav">
-                <button type="button" id="allButton" class="navButton">All</button>
-                <button type="button" id="todayButton" class="navButton">Due Today</button>
-                <button type="button" id="completedButton"class="navButton">Completed</button>
+                <button type="button" id="allButton" class="navButton listButton">All</button>
+                <button type="button" id="todayButton" class="navButton listButton">Due Today</button>
+                <button type="button" id="completedButton"class="navButton listButton">Completed</button>
             </div>
             <div class="divider">Lists
                 <button type="button" class="addListButton">+</button>
