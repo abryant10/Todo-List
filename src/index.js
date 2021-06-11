@@ -173,6 +173,8 @@ function todayButtonClicked () {
 function priorityUp (e) {
     if (!e.target.matches(".priorUp")) return;
     if (e.target.dataset.index == 0) return;
+    if (currentView == "today") return;
+    if (currentView == "completed") return;
     if(currentView == "all"){
         var index = parseInt(e.target.dataset.index);
         taskStorage.forEach(task => {
@@ -184,6 +186,19 @@ function priorityUp (e) {
                 task.allPriority--;
             }
         }) 
+    }else {
+        var listPrior = taskStorage[parseInt(e.target.dataset.index)].listPriority;
+        if(listPrior == 1) return;
+        taskStorage.forEach(task => {
+            if(task.list != currentView) return;
+            if(task.listPriority < (listPrior - 1)) return;
+            if(task.listPriority > (listPrior)) return;
+            if(task.listPriority == (listPrior - 1)) {
+                task.listPriority++;
+            } else if (task.listPriority == listPrior) {
+                task.listPriority--;
+            }
+        }) 
     }
     taskStorage = taskStorage.sort((a, b) => a.allPriority - b.allPriority);
     setTaskStorage();
@@ -192,6 +207,8 @@ function priorityUp (e) {
 function priorityDown (e) {
     if (!e.target.matches(".priorDown")) return;
     if (e.target.dataset.index == (taskStorage.length - 1)) return;
+    if (currentView == "today") return;
+    if (currentView == "completed") return;
     if(currentView == "all"){
         var index = parseInt(e.target.dataset.index);
         taskStorage.forEach(task => {
@@ -203,7 +220,21 @@ function priorityDown (e) {
                 task.allPriority--;
             }
         }) 
+    } else {
+        var listPrior = taskStorage[parseInt(e.target.dataset.index)].listPriority;
+        if(listPrior == renderArray.length) return;
+        taskStorage.forEach(task => {
+            if(task.list != currentView) return;
+            if(task.listPriority < (listPrior)) return;
+            if(task.listPriority > (listPrior + 1)) return;
+            if(task.listPriority == (listPrior + 1)) {
+                task.listPriority--;
+            } else if (task.listPriority == listPrior) {
+                task.listPriority++;
+            }
+        }) 
     }
+
     taskStorage = taskStorage.sort((a, b) => a.allPriority - b.allPriority);
     setTaskStorage();
     renderTaskView(currentView);
@@ -266,6 +297,8 @@ window.addEventListener("keydown", function(e) {
 
 
 //--------------- dom editors -----------------------
+
+
 function expandCardInfo (e) {
     if (!e.target.matches(".TCExpand")) return;
     var index = e.target.dataset.info;
@@ -381,31 +414,28 @@ renderTaskView("all");
 
 
 // to do next 
-    
-    // up and down priorotiy in list vieww
+    // completed box
     // edit task title
     // make list filtering work with dates back in webpack
 
 // -task editing
-    // - ability to change priority
     // - update title by clicking on it
     // - have checked off items go to completed list
 
 // -list creation tab
     // - logic for form to go away with click
-    // - add move lists up and down
-    // - add color picker for list
+    // - AFTER WP add move lists up and down
+    // - AFTER WP add color picker for list
 
 //task filtering
-    // - all is the top inbox
-    // - add a today box
     // - add a completed box
-//     //- today box sorts by project
+//     //after WP - today box sorts by project
 
-//moblie friendly menu and formating
-// check for really long list names and long task names
-// add tool tips to buttons
+// AFER WP moblie friendly menu and formating
+//  AFTER WP check for really long list names and long task names
+// AFTER WP add tool tips to buttons
 // when clicking away - close and submit list form, colse and submit task form, close all expanded info and rmeove all editable task forms. 
+// AFTER WP remove priority buttons from due today and completed tabs
 
 
 
