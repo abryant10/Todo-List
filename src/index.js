@@ -7,11 +7,12 @@ let listStorage = JSON.parse(localStorage.getItem('listStorage')) || ["Reminders
 
 let currentView =  "all";
 
+let completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
+
 
 // ------------task factory-----------------------------
 
 const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
-    var activeStatus = true;
     return{
         title, 
         list, 
@@ -19,7 +20,6 @@ const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
         dueDate,
         listPriority,
         allPriority,
-        activeStatus
     }
 }
 
@@ -59,13 +59,26 @@ function setTaskStorage () {
 function setListStorage () {
     localStorage.setItem("listStorage", JSON.stringify(listStorage));
 }
+function setCompletedStorage() {
+    localStorage.setItem("completedTasks", JSON.stringify(completedTasks));
+}
 
 function deleteTask (e) {
     if (!e.target.matches(".TCDelete")) return;
-    taskStorage.splice((e.target.dataset.index), 1);
-    updateAllPriority();
-    setTaskStorage();
-    renderTaskView(currentView);
+    if(currentView == "completed") {
+        completedTasks.splice((e.target.dataset.index), 1);
+        updateCompletedPriority();
+        setCompletedStorage();
+        renderTaskView(currentView);
+    }else {
+        var list = taskStorage[e.target.dataset.index].list; 
+        var index = taskStorage[e.target.dataset.index].listPriority;
+        taskStorage.splice((e.target.dataset.index), 1);
+        updateAllPriority();
+        updateListPriority(list, index);
+        setTaskStorage();
+        renderTaskView(currentView);
+    }
 }
 function deleteList () {
     listStorage.splice((listStorage.indexOf(listToDelete)), 1);
@@ -77,18 +90,31 @@ function deleteList () {
             taskStorage.splice(taskStorage.indexOf(task), 1);
         }
     })
+    updateAllPriority();
     setTaskStorage();
-    renderTaskView();
+    renderTaskView(currentView);
     listDeletePopup.style.display = "none";
 }
 function clearDeleteList () {
     listDeletePopup.style.display = "none";
 }
 
-function updateAllPriority () {
+function updateAllPriority() {
     taskStorage.forEach(task => {
         task.allPriority = (taskStorage.indexOf(task));
     }) 
+}
+function updateCompletedPriority() {
+    completedTasks.forEach(task => {
+        task.allPriority = (taskStorage.indexOf(task));
+    }) 
+}
+function updateListPriority(list, index) {
+    taskStorage.forEach(task => {
+        if(task.list != list) return;
+        if(task.listPriority < index) return;
+        task.listPriority--;
+    })
 }
 function listButtonClicked (e) {
     if(!e.target.matches(".listButton")) return;
@@ -136,8 +162,8 @@ function getRenderArray (list) {
         case ("completed"):
             switch (sortVal) {
                 case ("priority"):
-                    filteredArray = taskStorage.filter(task => task.activeStatus == false);
-                    renderArray = filteredArray.slice().sort((a, b) => a.allPriority - b.allPriority);
+                    renderArray = completedTasks.slice().sort((a, b) => a.allPriority - b.allPriority);
+                    console.log(renderArray);
                     break;
                 case ("due-date"):
                     //code
@@ -169,6 +195,10 @@ function allButtonClicked () {
 function todayButtonClicked () {
     currentView = "today";
     renderTaskView("today");
+}
+function completedButtonClicked() {
+    currentView = "completed"
+    renderTaskView("completed");
 }
 function priorityUp (e) {
     if (!e.target.matches(".priorUp")) return;
@@ -239,6 +269,20 @@ function priorityDown (e) {
     setTaskStorage();
     renderTaskView(currentView);
 }
+function completeTask(e) {
+    if(!e.target.matches(".TCCheck")) return;
+    var completedTask = taskStorage.splice(taskStorage[e.target.dataset.index], 1);
+    console.log(completedTask);
+    completedTasks = completedTasks.concat(completedTask);
+    console.log(completedTasks);
+    setCompletedStorage();
+    updateAllPriority();
+    updateListPriority();
+    updateCompletedPriority();
+    setTaskStorage();
+    renderTaskView(currentView);
+}
+
 
 // -------------- dom listeners ----------------------------------------------------
 
@@ -247,6 +291,7 @@ const addListForm = document.querySelector(".addListForm");
 const addListText = document.getElementById("addListText");
 const allButton = document.getElementById("allButton")
 const todayButton = document.getElementById("todayButton");
+const completedButton = document.getElementById("completedButton");
 const listNav = document.querySelector(".listNav");
 const newTaskButton = document.querySelector(".newTaskButton");
 const sortBySelector = document.getElementById("sortBySelector");
@@ -266,10 +311,16 @@ yesDeleteList.addEventListener("click", deleteList);
 noDeleteList.addEventListener("click", clearDeleteList);
 allButton.addEventListener('click', allButtonClicked);
 todayButton.addEventListener('click', todayButtonClicked);
+completedButton.addEventListener("click", completedButtonClicked);
 taskViewRenderDiv.addEventListener("click", deleteTask);
 taskViewRenderDiv.addEventListener("click", priorityUp);
 taskViewRenderDiv.addEventListener("click", priorityDown);
 taskViewRenderDiv.addEventListener("click", expandCardInfo);
+taskViewRenderDiv.addEventListener("click", completeTask);
+taskViewRenderDiv.addEventListener("click", taskTitleToInputField);
+taskViewRenderDiv.addEventListener("submit", updateTaskTitle);
+taskViewRenderDiv.addEventListener("click", taskNotesToTextArea);
+taskViewRenderDiv.addEventListener("submit", updateTaskNotes);
 addListButton.addEventListener("click", createNewListForm);
 addListForm.addEventListener('submit', listFormSubmit);
 newTaskButton.addEventListener("click", () => {
@@ -368,25 +419,72 @@ function clearTaskView () {
         taskViewRenderDiv.removeChild(taskViewRenderDiv.lastChild);
     }
 }
+function taskTitleToInputField(e) {
+    if(!e.target.matches(".TCTitle")) return;
+    if(currentView == "completed") return;
+    let index = e.target.dataset.index;
+    let parent =  e.target.parentElement;
+    parent.removeChild(e.target);
+    let form = document.createElement("form");
+    form.classList.add("changeTitleForm");
+    let input = document.createElement("input");
+    input.type ="text";
+    input.classList.add(".changeTitleInput");
+    input.dataset.index = index;
+    input.value = taskStorage[index].title;
+    parent.appendChild(form);
+    form.appendChild(input);
+}
+function updateTaskTitle(e) {
+    e.preventDefault();
+    if(!e.target.matches(".changeTitleForm")) return;
+    let input = e.target.querySelector("input");
+    taskStorage[input.dataset.index].title = input.value;
+    setTaskStorage();
+    renderTaskView(currentView);
+}
+function taskNotesToTextArea(e) {
+    if(!e.target.matches(".TC")) return;
+    if(currentView == "completed") return;
+    // let index = e.target.dataset.index;
+    // let parent =  e.target.parentElement;
+    // parent.removeChild(e.target);
+    // let form = document.createElement("form");
+    // form.classList.add("changeTitleForm");
+    // let input = document.createElement("input");
+    // input.type ="text";
+    // input.classList.add(".changeTitleInput");
+    // input.dataset.index = index;
+    // input.value = taskStorage[index].title;
+    // parent.appendChild(form);
+    // form.appendChild(input);
+}
+function updateTaskNotes(e) {
 
+}
 
 function renderTaskView (list) {
     var renderArray = getRenderArray(list); 
     clearTaskView();
     renderArray.forEach(task => { 
+        let checkbox = `<input type="checkbox" class="TCCheck" data-index="${task.allPriority}">`
+        let priorityButtons = 
+            `<button class="TCButton TCPriorButton priorUp" data-index="${task.allPriority}">&#9650</button>
+            <button class="TCButton TCPriorButton priorDown" data-index="${task.allPriority}">&#9660</button>`;
+        if(currentView == "completed"){checkbox = ""};
+        if(sortBySelector.value != "priority") {priorityButtons = ""};
         newTaskCard = document.createElement('div');
         newTaskCard.classList.add('taskCard');
-        newTaskCard.innerHTML = `    
-            <div class="TCTop">
+        newTaskCard.innerHTML =     
+            `<div class="TCTop">
                 <div class="TCTopLeft">
-                    <input type="checkbox" class="TCCheck">
-                    <p class="TCTitle">${task.title}</p>
+                    ${checkbox}
+                    <p class="TCTitle" data-index="${task.allPriority}">${task.title}</p>
                 </div>
                 <div class="TCTopRight">
                     <input type="date" class="TCDate" value="${task.dueDate}">
                     <div class="TCPriorityButtonContainer">
-                        <button class="TCButton TCPriorButton priorUp" data-index="${task.allPriority}">&#9650</button>
-                        <button class="TCButton TCPriorButton priorDown" data-index="${task.allPriority}">&#9660</button>
+                        ${priorityButtons}
                     </div>
                     <button class="TCButton TCDelete" data-index="${task.allPriority}">X</button>
                 </div>
@@ -414,9 +512,11 @@ renderTaskView("all");
 
 
 // to do next 
-    // completed box
-    // edit task title
-    // make list filtering work with dates back in webpack
+     // edit task notes
+        //set notes pointer to pointer
+        // make default notes a few blank spaces??
+        //finish functions
+     // make list filtering work with dates back in webpack
 
 // -task editing
     // - update title by clicking on it

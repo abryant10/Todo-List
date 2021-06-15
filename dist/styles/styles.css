@@ -239,6 +239,7 @@ header {
 }
 .TCNotes {
     border: none;
+    background-color: rgb(255, 255, 255);
 }
 .TCPriorityButtonContainer{
     display: flex;
