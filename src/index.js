@@ -27,7 +27,7 @@ function taskFormSubmit () {
     var taskText = (taskForm.querySelector('[name=taskText]')).value;
     if (taskText == "") return;
     const taskDueDate = (taskForm.querySelector('[name=taskDueDate]')).value;
-    const taskNotes = (taskForm.querySelector('[name=taskNotes]')).value;
+    const taskNotes = (taskForm.querySelector('[name=taskNotes]')).value || "   ";
     const taskList = (taskForm.querySelector('[name=listSelector]')).value;
     var priority = (checkListPriority(taskList));
     var task = Task(taskText, taskList, taskNotes, taskDueDate, priority, (taskStorage.length));
@@ -44,6 +44,7 @@ function checkListPriority (list) {
 }
 
 function listFormSubmit (e) {
+    console.log(e);
     e.preventDefault();
     var newList = addListText.value;
     listStorage.push(newList);
@@ -163,7 +164,6 @@ function getRenderArray (list) {
             switch (sortVal) {
                 case ("priority"):
                     renderArray = completedTasks.slice().sort((a, b) => a.allPriority - b.allPriority);
-                    console.log(renderArray);
                     break;
                 case ("due-date"):
                     //code
@@ -264,7 +264,6 @@ function priorityDown (e) {
             }
         }) 
     }
-
     taskStorage = taskStorage.sort((a, b) => a.allPriority - b.allPriority);
     setTaskStorage();
     renderTaskView(currentView);
@@ -272,9 +271,7 @@ function priorityDown (e) {
 function completeTask(e) {
     if(!e.target.matches(".TCCheck")) return;
     var completedTask = taskStorage.splice(taskStorage[e.target.dataset.index], 1);
-    console.log(completedTask);
     completedTasks = completedTasks.concat(completedTask);
-    console.log(completedTasks);
     setCompletedStorage();
     updateAllPriority();
     updateListPriority();
@@ -320,7 +317,7 @@ taskViewRenderDiv.addEventListener("click", completeTask);
 taskViewRenderDiv.addEventListener("click", taskTitleToInputField);
 taskViewRenderDiv.addEventListener("submit", updateTaskTitle);
 taskViewRenderDiv.addEventListener("click", taskNotesToTextArea);
-taskViewRenderDiv.addEventListener("submit", updateTaskNotes);
+taskViewRenderDiv.addEventListener("click", updateTaskNotes);
 addListButton.addEventListener("click", createNewListForm);
 addListForm.addEventListener('submit', listFormSubmit);
 newTaskButton.addEventListener("click", () => {
@@ -344,6 +341,15 @@ window.addEventListener("keydown", function(e) {
         taskFormSubmit();
     }
 })
+// When the user clicks anywhere outside of the taskform, 
+
+// window.onclick = function(e) { //this logic needs work
+//     if(e.target.matches(""))
+
+
+
+
+// }
 
 
 
@@ -369,6 +375,7 @@ function createTaskForm () {
 }
 
 function createNewListForm () {
+    // if (addListForm.value != "") {listFormSubmit(addListForm.submit);}
     addListForm.style.display = "block";
     addListText.focus();
 }
@@ -426,10 +433,10 @@ function taskTitleToInputField(e) {
     let parent =  e.target.parentElement;
     parent.removeChild(e.target);
     let form = document.createElement("form");
-    form.classList.add("changeTitleForm");
+    form.classList.add("TCchangeTitleForm");
     let input = document.createElement("input");
     input.type ="text";
-    input.classList.add(".changeTitleInput");
+    input.classList.add("TCchangeTitleInput");
     input.dataset.index = index;
     input.value = taskStorage[index].title;
     parent.appendChild(form);
@@ -444,23 +451,32 @@ function updateTaskTitle(e) {
     renderTaskView(currentView);
 }
 function taskNotesToTextArea(e) {
-    if(!e.target.matches(".TC")) return;
+    if(!e.target.matches(".TCNotes")) return;
     if(currentView == "completed") return;
-    // let index = e.target.dataset.index;
-    // let parent =  e.target.parentElement;
-    // parent.removeChild(e.target);
-    // let form = document.createElement("form");
-    // form.classList.add("changeTitleForm");
-    // let input = document.createElement("input");
-    // input.type ="text";
-    // input.classList.add(".changeTitleInput");
-    // input.dataset.index = index;
-    // input.value = taskStorage[index].title;
-    // parent.appendChild(form);
-    // form.appendChild(input);
+    let index = e.target.dataset.index;
+    let parent =  e.target.parentElement;
+    parent.removeChild(e.target);
+    let form = document.createElement("form");
+    form.classList.add("TCchangeNotesForm");
+    let textArea = document.createElement("TEXTAREA");
+    textArea.classList.add(".TCchangeNotesTextArea");
+    textArea.dataset.index = index;
+    textArea.value = taskStorage[index].notes;
+    let submit = document.createElement("button");
+    submit.classList.add("TCNotesButton");
+    submit.innerHTML = "Save Changes";
+    parent.appendChild(form);
+    form.appendChild(textArea);
+    form.appendChild(submit);
 }
 function updateTaskNotes(e) {
-
+    e.preventDefault();
+    if(!e.target.matches(".TCNotesButton")) return;
+    let parent = e.target.parentElement;
+    let textArea = parent.querySelector("textarea");
+    taskStorage[textArea.dataset.index].notes = textArea.value;
+    setTaskStorage();
+    renderTaskView(currentView);
 }
 
 function renderTaskView (list) {
@@ -471,6 +487,8 @@ function renderTaskView (list) {
         let priorityButtons = 
             `<button class="TCButton TCPriorButton priorUp" data-index="${task.allPriority}">&#9650</button>
             <button class="TCButton TCPriorButton priorDown" data-index="${task.allPriority}">&#9660</button>`;
+        let notes = `&nbsp;`;
+        if(task.notes != "") {notes = task.notes};
         if(currentView == "completed"){checkbox = ""};
         if(sortBySelector.value != "priority") {priorityButtons = ""};
         newTaskCard = document.createElement('div');
@@ -494,7 +512,7 @@ function renderTaskView (list) {
             </div>
             <div class="TCBottom" data-expand="${task.allPriority}">
                 <p>Notes:</p>
-                <p class="TCNotes">${task.notes}</p>
+                <div><p class="TCNotes" data-index="${task.allPriority}">${notes}</p></div>
                 <p>List:</p>
                 <p class="TCList">${task.list}</p>
             </div>`
@@ -509,54 +527,4 @@ renderListView();
 renderTaskView("all");
 
 
-
-
-// to do next 
-     // edit task notes
-        //set notes pointer to pointer
-        // make default notes a few blank spaces??
-        //finish functions
-     // make list filtering work with dates back in webpack
-
-// -task editing
-    // - update title by clicking on it
-    // - have checked off items go to completed list
-
-// -list creation tab
-    // - logic for form to go away with click
-    // - AFTER WP add move lists up and down
-    // - AFTER WP add color picker for list
-
-//task filtering
-    // - add a completed box
-//     //after WP - today box sorts by project
-
-// AFER WP moblie friendly menu and formating
-//  AFTER WP check for really long list names and long task names
-// AFTER WP add tool tips to buttons
-// when clicking away - close and submit list form, colse and submit task form, close all expanded info and rmeove all editable task forms. 
-// AFTER WP remove priority buttons from due today and completed tabs
-
-
-
-
-// When the user clicks anywhere outside of the taskform, 
-//submit if title is not empty but either way close it
-// window.onclick = function(event) { //this logic needs work
-//   if (event.target != taskFormContainer || event.target != newTaskButton) {
-//     console.log(event.target);
-//     if(taskText.value != "") {
-//             create task object
-//             push object to array
-//             clear form
-//             hide form
-//            resetTaskForm();
-//         } else {
-//             clear form
-//             hide form
-//            resetTaskForm();
-//         }
-//     }
-//     console.log("not the form");
-// }
 
