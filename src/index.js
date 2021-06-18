@@ -43,13 +43,13 @@ function checkListPriority (list) {
     return priority;
 }
 
-function listFormSubmit (e) {
-    console.log(e);
-    e.preventDefault();
+function listFormSubmit () {
+    var listText = (addListForm.querySelector('[name=addListText]')).value;
+    if (listText == "") return;
     var newList = addListText.value;
     listStorage.push(newList);
-    this.reset();
-    this.style.display = "none";
+    addListForm.reset();
+    addListForm.style.display = "none";
     setListStorage();
     renderListsToForm();
     renderListView();
@@ -318,12 +318,19 @@ taskViewRenderDiv.addEventListener("click", taskTitleToInputField);
 taskViewRenderDiv.addEventListener("submit", updateTaskTitle);
 taskViewRenderDiv.addEventListener("click", taskNotesToTextArea);
 taskViewRenderDiv.addEventListener("click", updateTaskNotes);
-addListButton.addEventListener("click", createNewListForm);
-addListForm.addEventListener('submit', listFormSubmit);
+addListButton.addEventListener("click", () => {
+    listFormSubmit();
+    createNewListForm();
+    addListText.focus();
+});
+addListForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    listFormSubmit();
+});
+
 newTaskButton.addEventListener("click", () => {
     taskFormSubmit();
     createTaskForm();
-    taskText.focus();
 });
 sortBySelector.addEventListener("change", () => {renderTaskView(currentView);});
 taskForm.addEventListener('submit', (event) => {
@@ -334,6 +341,7 @@ window.addEventListener('keydown', function(e) {
   if (e.key === "Escape") {
     resetTaskForm();
     resetListForm();
+    renderTaskView(currentView);
   }
 })
 window.addEventListener("keydown", function(e) {
@@ -345,8 +353,6 @@ window.addEventListener("keydown", function(e) {
 
 // window.onclick = function(e) { //this logic needs work
 //     if(e.target.matches(""))
-
-
 
 
 // }
@@ -372,10 +378,11 @@ function createTaskForm () {
     taskForm.reset();
     renderListsToForm();
     taskFormContainer.style.display = "block";    
+    taskText.focus();
 }
 
 function createNewListForm () {
-    // if (addListForm.value != "") {listFormSubmit(addListForm.submit);}
+    addListForm.reset();
     addListForm.style.display = "block";
     addListText.focus();
 }
