@@ -4,12 +4,12 @@
   // make list filtering work with dates back in webpack
 
 // -list creation tab
-    // - logic for form to go away with click
-    // - AFTER WP add move lists up and down
-    // - AFTER WP add color picker for list
+    // -logic for form to go away with click
+    // -add move lists up and down
+    // -add color picker for list
 
 //task filtering
-//     //after WP - today box sorts by project
+//     - today box sorts by project
 
 // AFER WP moblie friendly menu and formating
 //  AFTER WP check for really long list names and long task names
@@ -17,6 +17,8 @@
 // AFTER WP remove priority buttons from due today and completed tabs
 // DOCUMENT with NOTES in SCRIPT FILES
  // when clicking away - close and submit list form, colse and submit task form, close all expanded info and rmeove all editable task forms.    
+ // clicking on lists when either form is open closes form
+
 modules
      creating todo
     - creating lists
