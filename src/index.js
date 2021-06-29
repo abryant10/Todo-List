@@ -1,5 +1,6 @@
 import './styles/styles.css';
 import Icon from './styles/GitHub-Mark-Light-120px-plus.png';
+import {taskFormSubmit, deleteTask, updateAllPriority, setTaskStorage, priorityDown, priorityUp, completeTask} from '/src/modules/TaskLogic';
 
 // storage
 let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
@@ -8,43 +9,13 @@ let listStorage = JSON.parse(localStorage.getItem('listStorage')) || ["Reminders
 
 let currentView =  "all";
 
-let completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
+var completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
 
 let listToDelete;
 
+let renderArray;
+
 // ------------task factory-----------------------------
-
-const Task = (title, list, notes, dueDate, createdDate, listPriority, allPriority) => {
-    return{
-        title, 
-        list, 
-        notes,
-        dueDate,
-        createdDate,
-        listPriority,
-        allPriority,
-    }
-}
-
-function taskFormSubmit () {
-    var taskText = (taskForm.querySelector('[name=taskText]')).value;
-    if (taskText == "") return;
-    const taskDueDate = (taskForm.querySelector('[name=taskDueDate]')).value;
-    const taskNotes = (taskForm.querySelector('[name=taskNotes]')).value || "   ";
-    const taskList = (taskForm.querySelector('[name=listSelector]')).value;
-    var priority = (checkListPriority(taskList));
-    var task = Task(taskText, taskList, taskNotes, taskDueDate, priority, (taskStorage.length));
-    taskStorage.push(task);
-    setTaskStorage();
-    renderTaskView(currentView);    
-    taskFormContainer.style.display = "none";
-    taskForm.reset();
-}
-function checkListPriority (list) {
-    const listFilter = taskStorage.filter(task => task.list == list);
-    const priority = (listFilter.length +1);
-    return priority;
-}
 
 function listFormSubmit () {
     var listText = (addListForm.querySelector('[name=addListText]')).value;
@@ -57,33 +28,12 @@ function listFormSubmit () {
     renderListsToForm();
     renderListView();
 }
-function setTaskStorage () {
-    localStorage.setItem("taskStorage", JSON.stringify(taskStorage));
-}
+
 function setListStorage () {
     localStorage.setItem("listStorage", JSON.stringify(listStorage));
 }
-function setCompletedStorage() {
-    localStorage.setItem("completedTasks", JSON.stringify(completedTasks));
-}
 
-function deleteTask (e) {
-    if (!e.target.matches(".TCDelete")) return;
-    if(currentView == "completed") {
-        completedTasks.splice((e.target.dataset.index), 1);
-        updateCompletedPriority();
-        setCompletedStorage();
-        renderTaskView(currentView);
-    }else {
-        var list = taskStorage[e.target.dataset.index].list; 
-        var index = taskStorage[e.target.dataset.index].listPriority;
-        taskStorage.splice((e.target.dataset.index), 1);
-        updateAllPriority();
-        updateListPriority(list, index);
-        setTaskStorage();
-        renderTaskView(currentView);
-    }
-}
+
 const listDeleteButtonClicked = (e) => {
     if(!e.target.matches(".deleteListButton")) return;
     listToDelete = e.target.dataset.list;
@@ -109,28 +59,12 @@ function clearDeleteList () {
     listDeletePopup.style.display = "none";
 }
 
-function updateAllPriority() {
-    taskStorage.forEach(task => {
-        task.allPriority = (taskStorage.indexOf(task));
-    }) 
-}
-function updateCompletedPriority() {
-    completedTasks.forEach(task => {
-        task.allPriority = (taskStorage.indexOf(task));
-    }) 
-}
-function updateListPriority(list, index) {
-    taskStorage.forEach(task => {
-        if(task.list != list) return;
-        if(task.listPriority < index) return;
-        task.listPriority--;
-    })
-}
 function listButtonClicked (e) {
     if(!e.target.matches(".listButton")) return;
     currentView = e.target.innerHTML;
     renderTaskView(currentView);
     renderListsToForm();
+    listButtonHighlight(e.target);
 }
 
 function getRenderArray (list) {
@@ -143,7 +77,7 @@ function getRenderArray (list) {
             switch (sortVal) {
                 case ("priority"):
                     renderArray = taskStorage.slice().sort((a, b) => a.allPriority - b.allPriority); 
-                break;
+                    break;
                 case ("due-date"):
                     renderArray = taskStorage.slice().sort(function (a, b) {
                         var key1 = new Date(a.dueDate);
@@ -157,7 +91,7 @@ function getRenderArray (list) {
                             return 1;
                         }
                     });
-                break;
+                    break;
             }
             break;
         case ("today"):
@@ -165,31 +99,31 @@ function getRenderArray (list) {
                 case ("priority"):
                     filteredArray = taskStorage.filter(task => task.dueDate == today);
                     renderArray = filteredArray.slice().sort((a, b) => a.allPriority - b.allPriority);
-                break;
+                    break;
                 case ("due-date"):
                     //code
-                break;
+                    break;
             }
-        break;
+            break;
         case ("completed"):
             switch (sortVal) {
                 case ("priority"):
                     renderArray = completedTasks.slice().sort((a, b) => a.allPriority - b.allPriority);
-                break;
+                    break;
                 case ("due-date"):
                     //code
-                break;
+                    break;
             }
-        break;
+            break;
         default: 
         switch (sortVal) {
             case ("priority"):
                 filteredArray = taskStorage.filter(task => task.list == list);
                 renderArray = filteredArray.slice().sort((a, b) => a.listPriority - b.listPriority);
-            break;
+                break;
             case ("due-date"):
                 //code
-            break;
+                break;
         }
     }
     return renderArray;
@@ -197,95 +131,20 @@ function getRenderArray (list) {
 function allButtonClicked () {
     currentView = "all"
     renderTaskView("all");
+    listButtonHighlight();
 }
 
 function todayButtonClicked () {
     currentView = "today";
     renderTaskView("today");
+    listButtonHighlight()
 }
 function completedButtonClicked() {
     currentView = "completed"
     renderTaskView("completed");
+    listButtonHighlight()
 }
-function priorityUp (e) {
-    if (!e.target.matches(".priorUp")) return;
-    if (e.target.dataset.index == 0) return;
-    if (currentView == "today") return;
-    if (currentView == "completed") return;
-    if(currentView == "all"){
-        var index = parseInt(e.target.dataset.index);
-        taskStorage.forEach(task => {
-            if(task.allPriority < (index - 1)) return;
-            if(task.allPriority > (index)) return;
-            if(task.allPriority == (index - 1)) {
-                task.allPriority++;
-            } else if (task.allPriority == index) {
-                task.allPriority--;
-            }
-        }) 
-    }else {
-        var listPrior = taskStorage[parseInt(e.target.dataset.index)].listPriority;
-        if(listPrior == 1) return;
-        taskStorage.forEach(task => {
-            if(task.list != currentView) return;
-            if(task.listPriority < (listPrior - 1)) return;
-            if(task.listPriority > (listPrior)) return;
-            if(task.listPriority == (listPrior - 1)) {
-                task.listPriority++;
-            } else if (task.listPriority == listPrior) {
-                task.listPriority--;
-            }
-        }) 
-    }
-    taskStorage = taskStorage.sort((a, b) => a.allPriority - b.allPriority);
-    setTaskStorage();
-    renderTaskView(currentView);
-}
-function priorityDown (e) {
-    if (!e.target.matches(".priorDown")) return;
-    if (e.target.dataset.index == (taskStorage.length - 1)) return;
-    if (currentView == "today") return;
-    if (currentView == "completed") return;
-    if(currentView == "all"){
-        var index = parseInt(e.target.dataset.index);
-        taskStorage.forEach(task => {
-            if(task.allPriority < (index)) return;
-            if(task.allPriority > (index + 1)) return;
-            if(task.allPriority == (index)) {
-                task.allPriority++;
-            } else if (task.allPriority == (index + 1)) {
-                task.allPriority--;
-            }
-        }) 
-    } else {
-        var listPrior = taskStorage[parseInt(e.target.dataset.index)].listPriority;
-        if(listPrior == renderArray.length) return;
-        taskStorage.forEach(task => {
-            if(task.list != currentView) return;
-            if(task.listPriority < (listPrior)) return;
-            if(task.listPriority > (listPrior + 1)) return;
-            if(task.listPriority == (listPrior + 1)) {
-                task.listPriority--;
-            } else if (task.listPriority == listPrior) {
-                task.listPriority++;
-            }
-        }) 
-    }
-    taskStorage = taskStorage.sort((a, b) => a.allPriority - b.allPriority);
-    setTaskStorage();
-    renderTaskView(currentView);
-}
-function completeTask(e) {
-    if(!e.target.matches(".TCCheck")) return;
-    var completedTask = taskStorage.splice(taskStorage[e.target.dataset.index], 1);
-    completedTasks = completedTasks.concat(completedTask);
-    setCompletedStorage();
-    updateAllPriority();
-    updateListPriority();
-    updateCompletedPriority();
-    setTaskStorage();
-    renderTaskView(currentView);
-}
+
 
 
 // -------------- dom listeners ----------------------------------------------------
@@ -309,6 +168,7 @@ const listDeleteWarning = listDeletePopup.querySelector(".listDeleteWarning");
 const yesDeleteList = document.getElementById("yesDeleteList");
 const noDeleteList = document.getElementById("noDeleteList");
 const footerLink = document.getElementById("footerLink");
+
 
 listNav.addEventListener("click", listButtonClicked);
 listNav.addEventListener("click", listDeleteButtonClicked);
@@ -361,8 +221,6 @@ window.addEventListener("keydown", function(e) {
 
 // window.onclick = function(e) { //this logic needs work
 //     if(e.target.matches(""))
-
-
 // }
 
 
@@ -375,7 +233,25 @@ myIcon.alt="git hub mark";
 myIcon.height = "20";
 myIcon.width = "20";
 footerLink.appendChild(myIcon);
-
+//highlight list buttons when clicked
+function listButtonHighlight(target) {
+    var allListButtons = [...document.querySelectorAll(".listButton")];
+    allListButtons.forEach(button => {button.classList.remove("listButtonSelected");});
+    switch (currentView) {
+        case ("all"): 
+            allButton.classList.add("listButtonSelected");
+            break;
+        case ("today"):
+            todayButton.classList.add("listButtonSelected");
+            break;
+        case ("completed"):
+            completedButton.classList.add("listButtonSelected");
+            break;
+        default:
+            target.classList.add("listButtonSelected");
+            break;
+    }
+}
 function expandCardInfo (e) {
     if (!e.target.matches(".TCExpand")) return;
     var index = e.target.dataset.info;
@@ -501,7 +377,7 @@ function updateTaskNotes(e) {
 }
 
 function renderTaskView (list) {
-    var renderArray = getRenderArray(list); 
+    renderArray = getRenderArray(list); 
     clearTaskView();
     renderArray.forEach(task => { 
         let checkbox = `<input type="checkbox" class="TCCheck" data-index="${task.allPriority}">`
@@ -541,7 +417,7 @@ function renderTaskView (list) {
     });
 }
 
-
+export {taskForm, taskStorage, renderTaskView, taskFormContainer, currentView, completedTasks, renderArray};
 //----------------------- 
 renderListsToForm();
 renderListView();

@@ -1,7 +1,9 @@
 # Todo-List
 
 // to do next 
-  // make list filtering work with dates back in webpack
+    // completed not working cant set complateted tasks becuase "no setter"
+  // hide new task button on completed view
+  // make view keep icon lit
 
 // -list creation tab
     // -logic for form to go away with click
@@ -28,9 +30,9 @@ modules
 
 
 
-
-
-//const { et } = require("date-fns/locale");
+import './styles/styles.css';
+import Icon from './styles/GitHub-Mark-Light-120px-plus.png';
+import {Task} from ''
 
 // storage
 let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
@@ -41,15 +43,17 @@ let currentView =  "all";
 
 let completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
 
+let listToDelete;
 
 // ------------task factory-----------------------------
 
-const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
+const Task = (title, list, notes, dueDate, createdDate, listPriority, allPriority) => {
     return{
         title, 
         list, 
         notes,
         dueDate,
+        createdDate,
         listPriority,
         allPriority,
     }
@@ -113,13 +117,19 @@ function deleteTask (e) {
         renderTaskView(currentView);
     }
 }
+const listDeleteButtonClicked = (e) => {
+    if(!e.target.matches(".deleteListButton")) return;
+    listToDelete = e.target.dataset.list;
+    listDeletePopup.style.display = "block";
+    listDeleteWarning.innerHTML = `Are you sure you want to delete ${listToDelete} and all of it's tasks?`;
+}
 function deleteList () {
     listStorage.splice((listStorage.indexOf(listToDelete)), 1);
     setListStorage();
     renderListView();
     renderListsToForm();
     taskStorage.forEach(task => {
-        if(task.list == listToDelete) {
+        if(task.list == listDeleteButtonClicked.listToDelete) {
             taskStorage.splice(taskStorage.indexOf(task), 1);
         }
     })
@@ -155,28 +165,32 @@ function listButtonClicked (e) {
     renderTaskView(currentView);
     renderListsToForm();
 }
-function listDeleteButtonClicked (e) {
-    if(!e.target.matches(".deleteListButton")) return;
-    listToDelete = e.target.dataset.list;
-    listDeletePopup.style.display = "block";
-    listDeleteWarning.innerHTML = `Are you sure you want to delete ${listToDelete} and all of it's tasks?`;
-    return {listToDelete};
-}
+
 function getRenderArray (list) {
     var sortVal = sortBySelector.value;
     let filteredArray;
     let today = new Date().toISOString().split('T')[0];
+    let renderArray;
     switch (list) {
         case ("all"): 
             switch (sortVal) {
                 case ("priority"):
                     renderArray = taskStorage.slice().sort((a, b) => a.allPriority - b.allPriority); 
-                    break;
+                break;
                 case ("due-date"):
-                    //renderArray = taskStorage.slice().sort((a, b) => a.dueDate - b.dueDate); 
-                    break;
-                case ("date-created"):
-                    //code
+                    renderArray = taskStorage.slice().sort(function (a, b) {
+                        var key1 = new Date(a.dueDate);
+                        var key2 = new Date(b.dueDate);
+                    
+                        if (key1 < key2) {
+                            return -1;
+                        } else if (key1 == key2) {
+                            return 0;
+                        } else {
+                            return 1;
+                        }
+                    });
+                break;
             }
             break;
         case ("today"):
@@ -184,24 +198,20 @@ function getRenderArray (list) {
                 case ("priority"):
                     filteredArray = taskStorage.filter(task => task.dueDate == today);
                     renderArray = filteredArray.slice().sort((a, b) => a.allPriority - b.allPriority);
-                    break;
+                break;
                 case ("due-date"):
                     //code
-                    break;
-                case ("date-created"):
-                    //code
+                break;
             }
         break;
         case ("completed"):
             switch (sortVal) {
                 case ("priority"):
                     renderArray = completedTasks.slice().sort((a, b) => a.allPriority - b.allPriority);
-                    break;
+                break;
                 case ("due-date"):
                     //code
-                    break;
-                case ("date-created"):
-                    //code
+                break;
             }
         break;
         default: 
@@ -209,12 +219,10 @@ function getRenderArray (list) {
             case ("priority"):
                 filteredArray = taskStorage.filter(task => task.list == list);
                 renderArray = filteredArray.slice().sort((a, b) => a.listPriority - b.listPriority);
-                break;
+            break;
             case ("due-date"):
                 //code
-                break;
-            case ("date-created"):
-                //code
+            break;
         }
     }
     return renderArray;
@@ -333,6 +341,7 @@ const listDeletePopup = document.querySelector(".listDeletePopup");
 const listDeleteWarning = listDeletePopup.querySelector(".listDeleteWarning");
 const yesDeleteList = document.getElementById("yesDeleteList");
 const noDeleteList = document.getElementById("noDeleteList");
+const footerLink = document.getElementById("footerLink");
 
 listNav.addEventListener("click", listButtonClicked);
 listNav.addEventListener("click", listDeleteButtonClicked);
@@ -393,6 +402,12 @@ window.addEventListener("keydown", function(e) {
 
 //--------------- dom editors -----------------------
 
+const myIcon = new Image();
+myIcon.src = Icon;
+myIcon.alt="git hub mark";
+myIcon.height = "20";
+myIcon.width = "20";
+footerLink.appendChild(myIcon);
 
 function expandCardInfo (e) {
     if (!e.target.matches(".TCExpand")) return;
@@ -530,7 +545,7 @@ function renderTaskView (list) {
         if(task.notes != "") {notes = task.notes};
         if(currentView == "completed"){checkbox = ""};
         if(sortBySelector.value != "priority") {priorityButtons = ""};
-        newTaskCard = document.createElement('div');
+        var newTaskCard = document.createElement('div');
         newTaskCard.classList.add('taskCard');
         newTaskCard.innerHTML =     
             `<div class="TCTop">
@@ -564,7 +579,4 @@ function renderTaskView (list) {
 renderListsToForm();
 renderListView();
 renderTaskView("all");
-
-
-
 
