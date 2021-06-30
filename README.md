@@ -1,8 +1,6 @@
 # Todo-List
 
 // to do next 
-    // completed not working cant set complateted tasks becuase "no setter"
-  // hide new task button on completed view
   // make view keep icon lit
 
 // -list creation tab

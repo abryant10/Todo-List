@@ -1,4 +1,5 @@
-import { taskForm, taskStorage, renderTaskView, taskFormContainer, currentView, completedTasks, renderArray} from "../index";
+import { taskForm, taskStorage, renderTaskView, taskFormContainer, currentView, renderArray} from "../index";
+import {updateCompletedPriority, setCompletedStorage, completedTasks} from "./Completed"
 
 const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
     return{
@@ -60,6 +61,13 @@ function updateListPriority(list, index) {
         if(task.list != list) return;
         if(task.listPriority < index) return;
         task.listPriority--;
+    })
+}
+function deleteAllTaskFromDeadList(list){
+    taskStorage.forEach(task => {
+        if(task.list == list) {
+            taskStorage.splice(taskStorage.indexOf(task), 1);
+        }
     })
 }
 function priorityUp (e) {
@@ -131,27 +139,4 @@ function priorityDown (e) {
     renderTaskView(currentView);
 }
 
-function completeTask(e) {
-    if(!e.target.matches(".TCCheck")) return;
-    var completedTask = taskStorage.splice((e.target.dataset.index), 1);
-    const test = completedTasks.concat(completedTask);
-    console.log(test);
-    completedTasks = test;
-    console.log(completedTasks);
-    setCompletedStorage();
-    updateAllPriority();
-    updateListPriority();
-    updateCompletedPriority();
-    setTaskStorage();
-    renderTaskView(currentView);
-}
-function setCompletedStorage() {
-    localStorage.setItem("completedTasks", JSON.stringify(completedTasks));
-}
-
-function updateCompletedPriority() {   // this is not working
-    completedTasks.forEach(task => {
-        task.allPriority = completedTasks.indexOf(task);
-    }) 
-}
-export {taskFormSubmit, deleteTask, updateAllPriority, updateListPriority, updateCompletedPriority, setTaskStorage, priorityUp, priorityDown, completeTask, setCompletedStorage};
+export {taskFormSubmit, deleteTask, updateAllPriority, updateListPriority, setTaskStorage, priorityUp, priorityDown, deleteAllTaskFromDeadList};

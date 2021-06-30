@@ -1,72 +1,49 @@
 import './styles/styles.css';
 import Icon from './styles/GitHub-Mark-Light-120px-plus.png';
-import {taskFormSubmit, deleteTask, updateAllPriority, setTaskStorage, priorityDown, priorityUp, completeTask} from '/src/modules/TaskLogic';
+import {taskFormSubmit, deleteTask, setTaskStorage, priorityDown, priorityUp, } from '/src/modules/TaskLogic';
+import {completedTasks, completeTask} from '/src/modules/Completed';
+import {listStorage, listFormSubmit, deleteList, listToDelete, setListToDelete} from './modules/ListLogic';
 
 // storage
 let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
 
-let listStorage = JSON.parse(localStorage.getItem('listStorage')) || ["Reminders"];
-
 let currentView =  "all";
-
-var completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
-
-let listToDelete;
 
 let renderArray;
 
-// ------------task factory-----------------------------
-
-function listFormSubmit () {
-    var listText = (addListForm.querySelector('[name=addListText]')).value;
-    if (listText == "") return;
-    var newList = addListText.value;
-    listStorage.push(newList);
-    addListForm.reset();
-    addListForm.style.display = "none";
-    setListStorage();
-    renderListsToForm();
-    renderListView();
-}
-
-function setListStorage () {
-    localStorage.setItem("listStorage", JSON.stringify(listStorage));
-}
-
-
 const listDeleteButtonClicked = (e) => {
     if(!e.target.matches(".deleteListButton")) return;
-    listToDelete = e.target.dataset.list;
+    setListToDelete(e.target.dataset.list)
     listDeletePopup.style.display = "block";
     listDeleteWarning.innerHTML = `Are you sure you want to delete ${listToDelete} and all of it's tasks?`;
 }
-function deleteList () {
-    listStorage.splice((listStorage.indexOf(listToDelete)), 1);
-    setListStorage();
-    renderListView();
-    renderListsToForm();
-    taskStorage.forEach(task => {
-        if(task.list == listDeleteButtonClicked.listToDelete) {
-            taskStorage.splice(taskStorage.indexOf(task), 1);
-        }
-    })
-    updateAllPriority();
-    setTaskStorage();
-    renderTaskView(currentView);
-    listDeletePopup.style.display = "none";
-}
+
 function clearDeleteList () {
     listDeletePopup.style.display = "none";
 }
-
+function listFormReset() {
+    addListForm.reset();
+    addListForm.style.display = "none";
+}
+function resetListDeletePopup() {
+    listDeletePopup.style.display = "none";
+}
 function listButtonClicked (e) {
     if(!e.target.matches(".listButton")) return;
     currentView = e.target.innerHTML;
     renderTaskView(currentView);
     renderListsToForm();
     listButtonHighlight(e.target);
+    CheckHideNewTaskButton();
 }
-
+//hide the new task button so tasks are not made in completed view
+function CheckHideNewTaskButton() {
+    newTaskButton.style.display = "block";
+    if (currentView != "completed") return;
+    newTaskButton.style.display = "none";
+    console.log("test");
+}
+//logic that sorts user data for task card creation
 function getRenderArray (list) {
     var sortVal = sortBySelector.value;
     let filteredArray;
@@ -132,17 +109,20 @@ function allButtonClicked () {
     currentView = "all"
     renderTaskView("all");
     listButtonHighlight();
+    CheckHideNewTaskButton();
 }
 
 function todayButtonClicked () {
     currentView = "today";
     renderTaskView("today");
     listButtonHighlight()
+    CheckHideNewTaskButton();
 }
 function completedButtonClicked() {
     currentView = "completed"
     renderTaskView("completed");
     listButtonHighlight()
+    CheckHideNewTaskButton();
 }
 
 
@@ -417,7 +397,7 @@ function renderTaskView (list) {
     });
 }
 
-export {taskForm, taskStorage, renderTaskView, taskFormContainer, currentView, completedTasks, renderArray};
+export {taskForm, taskStorage, renderTaskView, taskFormContainer, currentView, renderArray, listFormReset, resetListDeletePopup, addListForm, renderListsToForm, renderListView};
 //----------------------- 
 renderListsToForm();
 renderListView();
