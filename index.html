@@ -8,8 +8,10 @@
     <div class="listDeletePopup">
         <div class="listDeleteContainer">
             <div class="listDeleteWarning"></div>
-            <button type="button" class="navButton" id="yesDeleteList">Yes</button>
-            <button type="button" class="navButton" id="noDeleteList">No</button>
+            <div class="listDelWarnButtonContainer">
+                <button type="button" class="listDelWarnButton navButton " id="yesDeleteList">Yes</button>
+                <button type="button" class="navButton listDelWarnButton" id="noDeleteList">No</button>
+            </div>
         </div>
     </div>
     <header>To Do List &#9745;</header>
@@ -37,23 +39,28 @@
                     </select>
             </div>
             <div class="taskViewer">
-                <div class="taskViewRenderDiv"></div>
+                <div class="newTaskButtonContainer">
+                    <button type="button" class="navButton newTaskButton">+ New Task</button>
+                </div>
                 <div class="taskFormContainer"> 
                     <form class="taskForm">
                         <span class="formTopRow">
-                            <input type="text" id="taskText" name="taskText">
-                            <label for="taskDueDate">Due:</label>
-                            <input type="date" id="taskDueDate" name="taskDueDate">  
+                            <div>
+                                <label for="taskText">Task</label>
+                                <input type="text" id="taskText" name="taskText">
+                            </div>
+                            <div>
+                                <label for="taskDueDate">Due</label>
+                                <input type="date" id="taskDueDate" name="taskDueDate">  
+                            </div>
                         </span>
-                        <label for="taskNotes">Notes:</label>
+                        <label for="taskNotes">Notes</label>
                         <textarea id="taskNotes" name="taskNotes"></textarea> 
                         <label for="listSelector">List</label>
                         <select name="listSelector" id="listSelector"></select>         
                     </form>
                 </div>
-                <div class="newTaskButtonContainer">
-                    <button type="button" class="navButton newTaskButton">+ New Task</button>
-                </div>
+                <div class="taskViewRenderDiv"></div>
             </div>
         </div>
     </div>
