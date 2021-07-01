@@ -4,7 +4,6 @@ import {taskFormSubmit, deleteTask, setTaskStorage, priorityDown, priorityUp, } 
 import {completedTasks, completeTask} from '/src/modules/Completed';
 import {listStorage, listFormSubmit, deleteList, listToDelete, setListToDelete} from './modules/ListLogic';
 
-// storage
 let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
 
 let currentView =  "all";
@@ -15,7 +14,7 @@ const listDeleteButtonClicked = (e) => {
     if(!e.target.matches(".deleteListButton")) return;
     setListToDelete(e.target.dataset.list)
     listDeletePopup.style.display = "block";
-    listDeleteWarning.innerHTML = `Are you sure you want to delete ${listToDelete} and all of it's tasks?`;
+    listDeleteWarning.innerHTML = `Are you sure you want to delete <b>${listToDelete}</b> and all of it's tasks?`;
 }
 
 function clearDeleteList () {
@@ -398,7 +397,7 @@ function renderTaskView (list) {
 }
 
 export {taskForm, taskStorage, renderTaskView, taskFormContainer, currentView, renderArray, listFormReset, resetListDeletePopup, addListForm, renderListsToForm, renderListView};
-//----------------------- 
+
 renderListsToForm();
 renderListView();
 renderTaskView("all");

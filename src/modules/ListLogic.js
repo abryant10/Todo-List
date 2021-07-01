@@ -36,4 +36,4 @@ function deleteList () {
 }
 
 
-export {listFormSubmit, deleteList, listStorage, setListToDelete};
+export {listFormSubmit, deleteList, listStorage, setListToDelete, listToDelete};

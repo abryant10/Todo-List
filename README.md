@@ -1,15 +1,16 @@
 # Todo-List
 
 // to do next 
-  // make view keep icon lit
+    //tc notes change text area style
+    //make sure change task title still works
+    //make change date work
+    // re-style prior buttons and delete buttons on card 
 
 // -list creation tab
     // -logic for form to go away with click
     // -add move lists up and down
     // -add color picker for list
 
-//task filtering
-//     - today box sorts by project
 
 // AFER WP moblie friendly menu and formating
 //  AFTER WP check for really long list names and long task names

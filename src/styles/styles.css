@@ -7,6 +7,7 @@ body {
     background-color: rgb(255, 255, 255);
     height: 100%;
 }
+
 .viewport {
     display: flex;
     flex-flow: column;
@@ -19,7 +20,6 @@ header {
     background-color: rgb(58, 84, 153);
     color: white;
     font-size: 60px;
-    /* width: 100%; */
 }
 .listDeletePopup {
     display: none; 
@@ -51,6 +51,19 @@ header {
     from {top: -300px; opacity: 0}
     to {top: 0; opacity: 1}
   }
+  .listDeleteWarning {
+      padding: 15px;
+      font-size: 20px;
+      text-align: center;
+      color: white;
+  }
+  .listDelWarnButtonContainer {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      padding: 20px;
+  }
+
  .navBodyContainer {
     flex-grow: 1;
     display: flex;
@@ -125,16 +138,17 @@ header {
 .deleteListButton {
     display: none;
     text-align: center;
+    justify-content: center;
     cursor: pointer;
     border-style: none;
     border-radius: 6px;
-    width: 17px;
+    min-width: 17px;
     height: 17px;
     font-size: 10px;
     margin-left: 10px;
     margin-right: 5px;
     margin-bottom: 1px;
-    padding: 0%;
+    padding: 2px;
 }
 .deleteListButton:hover {
     background: white;
@@ -143,7 +157,9 @@ header {
     display: flex;
     cursor: pointer;
     flex-grow: 1;
+    max-width: 200px;
     background: none;
+    text-align: start;
     border: none;
     font-size: 20px;
 }
@@ -154,6 +170,7 @@ header {
     display: flex;
     flex-grow: 1;
     flex-direction: column;
+    margin-bottom: 50px;
 } 
 .taskViewerNav {
     display: flex;
@@ -174,6 +191,57 @@ header {
 }
 .taskFormContainer {
     display: none;
+    min-width: 100px;
+    max-width: 600px;
+    margin: 15px;
+    margin-right: 130px;
+    background-color: rgb(241, 241, 241);
+    border-radius: 25px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 20px;
+}
+.taskForm {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+.formTopRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+#taskText {
+    position: relative;
+    width: 200px;
+    min-width: 50px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    outline: none;
+}
+#taskDueDate {
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    outline: none;
+    font-family: Arial, Helvetica, sans-serif; 
+    width: auto;
+}
+#taskNotes {
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    outline: none;
+}
+#listSelector {
+    width: fit-content;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    outline: none;
 }
 .taskCard {
     display: flex;
@@ -247,6 +315,26 @@ header {
     border-radius: 7px;
     cursor: pointer;
 }
+.TCNotesButton {
+    align-items: center;
+    margin: 10px;
+    border-style: none;
+    text-align: center;
+    background-color: transparent;
+    font-size: large;
+    border-radius: 5px;
+}
+.TCchangeNotesTextArea {
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    outline: none;
+}
+.TCNotesButton:hover {
+    background-color: rgb(180, 180, 180);
+    cursor: pointer;
+}
 .TCPriorityButtonContainer{
     display: flex;
     flex-direction: column;
@@ -287,6 +375,10 @@ header {
 .newTaskButton {
     margin-bottom: 200px;
 }
+.newTaskButtonContainer {
+    height: 50px;
+    margin-left: 15px;
+}
 footer {
    position: fixed;
    left: 0;
@@ -297,3 +389,11 @@ footer {
    text-align: center;
    padding: 5px;
 }  
+.listDelWarnButton {
+    color: white;
+    font-size: 20px;
+    justify-content: center;
+    width: 65px;
+    background-color: rgb(116, 138, 199);
+    padding: 10px;
+}
