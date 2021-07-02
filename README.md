@@ -1,9 +1,8 @@
 # Todo-List
 
 // to do next 
-    //tc notes change text area style
-    //make sure change task title still works
     //make change date work
+    //make sory by date in list view work. 
     // re-style prior buttons and delete buttons on card 
 
 // -list creation tab
@@ -13,7 +12,6 @@
 
 
 // AFER WP moblie friendly menu and formating
-//  AFTER WP check for really long list names and long task names
 // AFTER WP add tool tips to buttons
 // AFTER WP remove priority buttons from due today and completed tabs
 // DOCUMENT with NOTES in SCRIPT FILES

@@ -163,6 +163,11 @@ taskViewRenderDiv.addEventListener("click", expandCardInfo);
 taskViewRenderDiv.addEventListener("click", completeTask);
 taskViewRenderDiv.addEventListener("click", taskTitleToInputField);
 taskViewRenderDiv.addEventListener("submit", updateTaskTitle);
+// taskViewRenderDiv.addEventListener("keydown", function(e) {
+//     if (e.key === "Enter") {
+//         updateTaskTitle();
+//     }
+// })
 taskViewRenderDiv.addEventListener("click", taskNotesToTextArea);
 taskViewRenderDiv.addEventListener("click", updateTaskNotes);
 addListButton.addEventListener("click", () => {
@@ -302,6 +307,7 @@ function clearTaskView () {
         taskViewRenderDiv.removeChild(taskViewRenderDiv.lastChild);
     }
 }
+
 function taskTitleToInputField(e) {
     if(!e.target.matches(".TCTitle")) return;
     if(currentView == "completed") return;
@@ -320,9 +326,10 @@ function taskTitleToInputField(e) {
 }
 function updateTaskTitle(e) {
     e.preventDefault();
-    if(!e.target.matches(".changeTitleForm")) return;
+    if(!e.target.matches(".TCchangeTitleForm")) return;
     let input = e.target.querySelector("input");
     taskStorage[input.dataset.index].title = input.value;
+    console.log(taskStorage[input.dataset.index].title);
     setTaskStorage();
     renderTaskView(currentView);
 }
@@ -335,7 +342,7 @@ function taskNotesToTextArea(e) {
     let form = document.createElement("form");
     form.classList.add("TCchangeNotesForm");
     let textArea = document.createElement("TEXTAREA");
-    textArea.classList.add(".TCchangeNotesTextArea");
+    textArea.classList.add("TCchangeNotesTextArea");
     textArea.dataset.index = index;
     textArea.value = taskStorage[index].notes;
     let submit = document.createElement("button");

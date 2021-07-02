@@ -221,6 +221,7 @@ header {
     padding: 5px;
     outline: none;
 }
+
 #taskDueDate {
     border: none;
     border-radius: 5px;
@@ -330,6 +331,8 @@ header {
     border-radius: 5px;
     padding: 5px;
     outline: none;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
 }
 .TCNotesButton:hover {
     background-color: rgb(180, 180, 180);
@@ -371,6 +374,18 @@ header {
     background-color: white;
     padding: 5px;
     border-radius: 7px;
+}
+.TCchangeTitleInput {
+    position: relative;
+    font-size: 30px;
+    width: 200px;
+    min-width: 50px;
+    margin-right: 10px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    outline: none;
 }
 .newTaskButton {
     margin-bottom: 200px;
