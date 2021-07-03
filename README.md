@@ -2,7 +2,6 @@
 
 // to do next 
     //make change date work
-    //make sory by date in list view work. 
     // re-style prior buttons and delete buttons on card 
 
 // -list creation tab

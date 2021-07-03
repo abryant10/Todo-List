@@ -1,5 +1,6 @@
 import './styles/styles.css';
 import Icon from './styles/GitHub-Mark-Light-120px-plus.png';
+import { format, parseISO } from 'date-fns';
 import {taskFormSubmit, deleteTask, setTaskStorage, priorityDown, priorityUp, } from '/src/modules/TaskLogic';
 import {completedTasks, completeTask} from '/src/modules/Completed';
 import {listStorage, listFormSubmit, deleteList, listToDelete, setListToDelete} from './modules/ListLogic';
@@ -40,7 +41,6 @@ function CheckHideNewTaskButton() {
     newTaskButton.style.display = "block";
     if (currentView != "completed") return;
     newTaskButton.style.display = "none";
-    console.log("test");
 }
 //logic that sorts user data for task card creation
 function getRenderArray (list) {
@@ -58,7 +58,6 @@ function getRenderArray (list) {
                     renderArray = taskStorage.slice().sort(function (a, b) {
                         var key1 = new Date(a.dueDate);
                         var key2 = new Date(b.dueDate);
-                    
                         if (key1 < key2) {
                             return -1;
                         } else if (key1 == key2) {
@@ -77,7 +76,8 @@ function getRenderArray (list) {
                     renderArray = filteredArray.slice().sort((a, b) => a.allPriority - b.allPriority);
                     break;
                 case ("due-date"):
-                    //code
+                    filteredArray = taskStorage.filter(task => task.dueDate == today);
+                    renderArray = filteredArray.slice().sort((a, b) => a.allPriority - b.allPriority);
                     break;
             }
             break;
@@ -87,7 +87,17 @@ function getRenderArray (list) {
                     renderArray = completedTasks.slice().sort((a, b) => a.allPriority - b.allPriority);
                     break;
                 case ("due-date"):
-                    //code
+                    renderArray = completedTasks.slice().sort(function (a, b) {
+                        var key1 = new Date(a.dueDate);
+                        var key2 = new Date(b.dueDate);
+                        if (key1 < key2) {
+                            return -1;
+                        } else if (key1 == key2) {
+                            return 0;
+                        } else {
+                            return 1;
+                        }
+                    });
                     break;
             }
             break;
@@ -98,7 +108,18 @@ function getRenderArray (list) {
                 renderArray = filteredArray.slice().sort((a, b) => a.listPriority - b.listPriority);
                 break;
             case ("due-date"):
-                //code
+                filteredArray = taskStorage.filter(task => task.list == list);
+                renderArray = filteredArray.slice().sort(function (a, b) {
+                    var key1 = new Date(a.dueDate);
+                    var key2 = new Date(b.dueDate);
+                    if (key1 < key2) {
+                        return -1;
+                    } else if (key1 == key2) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                });
                 break;
         }
     }
@@ -162,12 +183,9 @@ taskViewRenderDiv.addEventListener("click", priorityDown);
 taskViewRenderDiv.addEventListener("click", expandCardInfo);
 taskViewRenderDiv.addEventListener("click", completeTask);
 taskViewRenderDiv.addEventListener("click", taskTitleToInputField);
+taskViewRenderDiv.addEventListener("click", taskDateToDateField);
+taskViewRenderDiv.addEventListener("click", updateTaskDate);
 taskViewRenderDiv.addEventListener("submit", updateTaskTitle);
-// taskViewRenderDiv.addEventListener("keydown", function(e) {
-//     if (e.key === "Enter") {
-//         updateTaskTitle();
-//     }
-// })
 taskViewRenderDiv.addEventListener("click", taskNotesToTextArea);
 taskViewRenderDiv.addEventListener("click", updateTaskNotes);
 addListButton.addEventListener("click", () => {
@@ -201,6 +219,7 @@ window.addEventListener("keydown", function(e) {
         taskFormSubmit();
     }
 })
+
 // When the user clicks anywhere outside of the taskform, 
 
 // window.onclick = function(e) { //this logic needs work
@@ -324,12 +343,30 @@ function taskTitleToInputField(e) {
     parent.appendChild(form);
     form.appendChild(input);
 }
+function taskDateToDateField(e) {
+    if(!e.target.matches(".TCDate")) return;
+    if(currentView == "completed") return;
+    let index = e.target.dataset.index;
+    let parent =  e.target.parentElement;
+    parent.removeChild(e.target);
+    let form = document.createElement("form");
+    form.classList.add("TCchangeDateForm");
+    let input = document.createElement("input");
+    input.type ="date";
+    input.classList.add("TCchangeDateInput");
+    input.dataset.index = index;
+    input.value = taskStorage[index].dueDate;
+    parent.insertBefore(form, parent.firstChild);
+    form.appendChild(input);
+}
+function updateTaskDate(e) {
+    //this....
+}
 function updateTaskTitle(e) {
     e.preventDefault();
     if(!e.target.matches(".TCchangeTitleForm")) return;
     let input = e.target.querySelector("input");
     taskStorage[input.dataset.index].title = input.value;
-    console.log(taskStorage[input.dataset.index].title);
     setTaskStorage();
     renderTaskView(currentView);
 }
@@ -353,8 +390,8 @@ function taskNotesToTextArea(e) {
     form.appendChild(submit);
 }
 function updateTaskNotes(e) {
-    e.preventDefault();
     if(!e.target.matches(".TCNotesButton")) return;
+    e.preventDefault();
     let parent = e.target.parentElement;
     let textArea = parent.querySelector("textarea");
     taskStorage[textArea.dataset.index].notes = textArea.value;
@@ -383,7 +420,7 @@ function renderTaskView (list) {
                     <p class="TCTitle" data-index="${task.allPriority}">${task.title}</p>
                 </div>
                 <div class="TCTopRight">
-                    <input type="date" class="TCDate" value="${task.dueDate}">
+                    <p class="TCDate" data-index="${task.allPriority}">${format(parseISO(task.dueDate), 'M/d/y')}</p>
                     <div class="TCPriorityButtonContainer">
                         ${priorityButtons}
                     </div>
