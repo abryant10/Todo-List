@@ -14,7 +14,9 @@ function setListStorage () {
 
 function listFormSubmit () {
     var listText = (addListForm.querySelector('[name=addListText]')).value;
-    if (listText == "") return;
+    if (listText == "") {
+        listFormReset();
+        return;}
     var newList = addListText.value;
     listStorage.push(newList);
     listFormReset();

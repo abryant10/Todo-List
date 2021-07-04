@@ -11,13 +11,20 @@ let currentView =  "all";
 
 let renderArray;
 
+const myIcon = new Image();
+myIcon.src = Icon;
+myIcon.alt="git hub mark";
+myIcon.height = "20";
+myIcon.width = "20";
+
+//--------------- dom editors -----------------------
+
 const listDeleteButtonClicked = (e) => {
     if(!e.target.matches(".deleteListButton")) return;
     setListToDelete(e.target.dataset.list)
     listDeletePopup.style.display = "block";
     listDeleteWarning.innerHTML = `Are you sure you want to delete <b>${listToDelete}</b> and all of it's tasks?`;
 }
-
 function clearDeleteList () {
     listDeletePopup.style.display = "none";
 }
@@ -144,98 +151,6 @@ function completedButtonClicked() {
     listButtonHighlight()
     CheckHideNewTaskButton();
 }
-
-
-
-// -------------- dom listeners ----------------------------------------------------
-
-const addListButton = document.querySelector(".addListButton");
-const addListForm = document.querySelector(".addListForm");
-const addListText = document.getElementById("addListText");
-const allButton = document.getElementById("allButton")
-const todayButton = document.getElementById("todayButton");
-const completedButton = document.getElementById("completedButton");
-const listNav = document.querySelector(".listNav");
-const newTaskButton = document.querySelector(".newTaskButton");
-const sortBySelector = document.getElementById("sortBySelector");
-const taskFormContainer = document.querySelector(".taskFormContainer");
-const taskForm = document.querySelector(".taskForm");
-const taskText = document.getElementById("taskText");
-const listSelector = document.getElementById('listSelector');
-const taskViewRenderDiv = document.querySelector('.taskViewRenderDiv');
-const listDeletePopup = document.querySelector(".listDeletePopup");
-const listDeleteWarning = listDeletePopup.querySelector(".listDeleteWarning");
-const yesDeleteList = document.getElementById("yesDeleteList");
-const noDeleteList = document.getElementById("noDeleteList");
-const footerLink = document.getElementById("footerLink");
-
-
-listNav.addEventListener("click", listButtonClicked);
-listNav.addEventListener("click", listDeleteButtonClicked);
-yesDeleteList.addEventListener("click", deleteList);
-noDeleteList.addEventListener("click", clearDeleteList);
-allButton.addEventListener('click', allButtonClicked);
-todayButton.addEventListener('click', todayButtonClicked);
-completedButton.addEventListener("click", completedButtonClicked);
-taskViewRenderDiv.addEventListener("click", deleteTask);
-taskViewRenderDiv.addEventListener("click", priorityUp);
-taskViewRenderDiv.addEventListener("click", priorityDown);
-taskViewRenderDiv.addEventListener("click", expandCardInfo);
-taskViewRenderDiv.addEventListener("click", completeTask);
-taskViewRenderDiv.addEventListener("click", taskTitleToInputField);
-taskViewRenderDiv.addEventListener("click", taskDateToDateField);
-taskViewRenderDiv.addEventListener("click", updateTaskDate);
-taskViewRenderDiv.addEventListener("submit", updateTaskTitle);
-taskViewRenderDiv.addEventListener("click", taskNotesToTextArea);
-taskViewRenderDiv.addEventListener("click", updateTaskNotes);
-addListButton.addEventListener("click", () => {
-    listFormSubmit();
-    createNewListForm();
-    addListText.focus();
-});
-addListForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    listFormSubmit();
-});
-
-newTaskButton.addEventListener("click", () => {
-    taskFormSubmit();
-    createTaskForm();
-});
-sortBySelector.addEventListener("change", () => {renderTaskView(currentView);});
-taskForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    taskFormSubmit();
-}); 
-window.addEventListener('keydown', function(e) {
-  if (e.key === "Escape") {
-    resetTaskForm();
-    resetListForm();
-    renderTaskView(currentView);
-  }
-})
-window.addEventListener("keydown", function(e) {
-    if (taskFormContainer.style.display == "block" && e.key === "Enter") {
-        taskFormSubmit();
-    }
-})
-
-// When the user clicks anywhere outside of the taskform, 
-
-// window.onclick = function(e) { //this logic needs work
-//     if(e.target.matches(""))
-// }
-
-
-
-//--------------- dom editors -----------------------
-
-const myIcon = new Image();
-myIcon.src = Icon;
-myIcon.alt="git hub mark";
-myIcon.height = "20";
-myIcon.width = "20";
-footerLink.appendChild(myIcon);
 //highlight list buttons when clicked
 function listButtonHighlight(target) {
     var allListButtons = [...document.querySelectorAll(".listButton")];
@@ -326,7 +241,14 @@ function clearTaskView () {
         taskViewRenderDiv.removeChild(taskViewRenderDiv.lastChild);
     }
 }
+function windowClickListFormSubmit(e) {
+    if (e.target.matches(".addListButton")) return;
+    if (e.target.matches(".addListText")) return;
+    if (addListForm.style.display == "block") {
+        listFormSubmit();
+    }
 
+}
 function taskTitleToInputField(e) {
     if(!e.target.matches(".TCTitle")) return;
     if(currentView == "completed") return;
@@ -360,7 +282,16 @@ function taskDateToDateField(e) {
     form.appendChild(input);
 }
 function updateTaskDate(e) {
-    //this....
+    if(e.target.matches(".TCDate")) return;
+    if(e.target.matches(".TCchangeDateInput")) return;
+    let dateInput = document.querySelectorAll(".TCchangeDateInput");
+    if (dateInput.length > 0) {
+        dateInput.forEach(dateField => {
+            taskStorage[dateField.dataset.index].dueDate = dateField.value;
+        })
+    setTaskStorage();
+    renderTaskView(currentView);
+    }
 }
 function updateTaskTitle(e) {
     e.preventDefault();
@@ -411,6 +342,13 @@ function renderTaskView (list) {
         if(task.notes != "") {notes = task.notes};
         if(currentView == "completed"){checkbox = ""};
         if(sortBySelector.value != "priority") {priorityButtons = ""};
+        if(currentView == "today") {priorityButtons = ""};
+        let renderedTaskDate;
+        if(task.dueDate != "") {
+            renderedTaskDate = format(parseISO(task.dueDate), 'M/d/y')
+        }else {
+            renderedTaskDate = "Due Date";
+        }
         var newTaskCard = document.createElement('div');
         newTaskCard.classList.add('taskCard');
         newTaskCard.innerHTML =     
@@ -420,7 +358,7 @@ function renderTaskView (list) {
                     <p class="TCTitle" data-index="${task.allPriority}">${task.title}</p>
                 </div>
                 <div class="TCTopRight">
-                    <p class="TCDate" data-index="${task.allPriority}">${format(parseISO(task.dueDate), 'M/d/y')}</p>
+                    <p class="TCDate" data-index="${task.allPriority}">${renderedTaskDate}</p>
                     <div class="TCPriorityButtonContainer">
                         ${priorityButtons}
                     </div>
@@ -440,8 +378,83 @@ function renderTaskView (list) {
     });
 }
 
+// -------------- dom listeners ----------------------------------------------------
+const addListButton = document.querySelector(".addListButton");
+const addListForm = document.querySelector(".addListForm");
+const addListText = document.getElementById("addListText");
+const allButton = document.getElementById("allButton")
+const todayButton = document.getElementById("todayButton");
+const completedButton = document.getElementById("completedButton");
+const listNav = document.querySelector(".listNav");
+const newTaskButton = document.querySelector(".newTaskButton");
+const sortBySelector = document.getElementById("sortBySelector");
+const taskFormContainer = document.querySelector(".taskFormContainer");
+const taskForm = document.querySelector(".taskForm");
+const taskText = document.getElementById("taskText");
+const listSelector = document.getElementById('listSelector');
+const taskViewRenderDiv = document.querySelector('.taskViewRenderDiv');
+const listDeletePopup = document.querySelector(".listDeletePopup");
+const listDeleteWarning = listDeletePopup.querySelector(".listDeleteWarning");
+const yesDeleteList = document.getElementById("yesDeleteList");
+const noDeleteList = document.getElementById("noDeleteList");
+const footerLink = document.getElementById("footerLink");
+
+listNav.addEventListener("click", listButtonClicked);
+listNav.addEventListener("click", listDeleteButtonClicked);
+yesDeleteList.addEventListener("click", deleteList);
+noDeleteList.addEventListener("click", clearDeleteList);
+allButton.addEventListener('click', allButtonClicked);
+todayButton.addEventListener('click', todayButtonClicked);
+completedButton.addEventListener("click", completedButtonClicked);
+taskViewRenderDiv.addEventListener("click", deleteTask);
+taskViewRenderDiv.addEventListener("click", priorityUp);
+taskViewRenderDiv.addEventListener("click", priorityDown);
+taskViewRenderDiv.addEventListener("click", expandCardInfo);
+taskViewRenderDiv.addEventListener("click", completeTask);
+taskViewRenderDiv.addEventListener("click", taskTitleToInputField);
+taskViewRenderDiv.addEventListener("click", taskDateToDateField);
+taskViewRenderDiv.addEventListener("submit", updateTaskTitle);
+taskViewRenderDiv.addEventListener("click", taskNotesToTextArea);
+taskViewRenderDiv.addEventListener("click", updateTaskNotes);
+addListButton.addEventListener("click", () => {
+    listFormSubmit();
+    createNewListForm();
+    addListText.focus();
+});
+addListForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    listFormSubmit();
+});
+
+newTaskButton.addEventListener("click", () => {
+    taskFormSubmit();
+    createTaskForm();
+});
+sortBySelector.addEventListener("change", () => {renderTaskView(currentView);});
+taskForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    taskFormSubmit();
+}); 
+window.addEventListener('keydown', function(e) {
+  if (e.key === "Escape") {
+    resetTaskForm();
+    resetListForm();
+    renderTaskView(currentView);
+  }
+})
+window.addEventListener("keydown", function(e) {
+    if (taskFormContainer.style.display == "block" && e.key === "Enter") {
+        taskFormSubmit();
+    }
+})
+window.addEventListener("click", (e) => {
+    updateTaskDate(e);
+    windowClickListFormSubmit(e);
+});
+
 export {taskForm, taskStorage, renderTaskView, taskFormContainer, currentView, renderArray, listFormReset, resetListDeletePopup, addListForm, renderListsToForm, renderListView};
 
+footerLink.appendChild(myIcon);
 renderListsToForm();
 renderListView();
 renderTaskView("all");
