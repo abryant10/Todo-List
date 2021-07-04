@@ -1,4 +1,4 @@
-import { taskForm, taskStorage, renderTaskView, taskFormContainer, currentView, renderArray} from "../index";
+import { taskForm, taskStorage, renderTaskView, taskFormContainer, currentView, renderArray} from "./UI";
 import {updateCompletedPriority, setCompletedStorage, completedTasks} from "./Completed"
 
 const Task = (title, list, notes, dueDate, listPriority, allPriority) => {

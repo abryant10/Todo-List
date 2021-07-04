@@ -1,4 +1,4 @@
-import { listFormReset, renderListsToForm, renderListView, renderTaskView, resetListDeletePopup, taskStorage, addListForm, currentView} from "../index";
+import { listFormReset, renderListsToForm, renderListView, renderTaskView, resetListDeletePopup, addListForm, currentView} from "./UI";
 import {updateAllPriority, setTaskStorage, deleteAllTaskFromDeadList} from "./TaskLogic";
 
 

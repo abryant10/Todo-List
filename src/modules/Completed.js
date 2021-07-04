@@ -1,4 +1,4 @@
-import { taskStorage, renderTaskView, currentView } from "../index";
+import { taskStorage, renderTaskView, currentView } from "./UI";
 import { updateAllPriority, updateListPriority, setTaskStorage} from "./TaskLogic";
 
 var completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];

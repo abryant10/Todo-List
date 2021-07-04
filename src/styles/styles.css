@@ -347,7 +347,7 @@ header {
     width: auto;
 }
 .TCNotesButton:hover {
-    background-color: rgb(180, 180, 180);
+    background-color: rgb(228, 228, 228);
     cursor: pointer;
 }
 .TCPriorityButtonContainer{
@@ -356,7 +356,7 @@ header {
     align-items: center;
 }
 .TCButton:hover {
-    background-color: white;
+    background-color: rgb(228, 228, 228);
 }
 .TCPriorButton {
     visibility: hidden;
