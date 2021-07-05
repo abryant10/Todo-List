@@ -156,7 +156,7 @@ function completedButtonClicked() {
 }
 //highlight list buttons when clicked
 function listButtonHighlight(target) {
-    var allListButtons = [...document.querySelectorAll(".listButton")];
+    var allListButtons = [...document.querySelectorAll(".listHover")];
     allListButtons.forEach(button => {button.classList.remove("listButtonSelected");});
     switch (currentView) {
         case ("all"): 
@@ -169,7 +169,7 @@ function listButtonHighlight(target) {
             completedButton.classList.add("listButtonSelected");
             break;
         default:
-            target.classList.add("listButtonSelected");
+            target.parentElement.classList.add("listButtonSelected");
             break;
     }
 }
@@ -208,16 +208,15 @@ function resetListForm () {
 function renderListsToForm () {
     listSelector.innerHTML = "";
     listStorage.forEach(listIndex => {
-        if (listIndex == currentView){
+        if (listIndex.name == currentView){
             var listOption = document.createElement('option');
-            var listOption = document.createElement('option');
-            listOption.innerHTML = `${listIndex}`;
+            listOption.innerHTML = `${listIndex.name}`;
             listOption.selected = "selected";
             listSelector.appendChild(listOption);
         }else {
             var listOption = document.createElement('option');
-            listOption.value = `${listIndex}`;
-            listOption.innerHTML = `${listIndex}`;
+            listOption.value = `${listIndex.name}`;
+            listOption.innerHTML = `${listIndex.name}`;
             listSelector.appendChild(listOption);
         }
     })
@@ -226,14 +225,16 @@ function renderListView () {
     listNav.innerHTML = "";
     listStorage.forEach(listIndex => {
         var listButtonDiv = document.createElement("div");
+        listButtonDiv.style.backgroundColor = listIndex.color;
+        listButtonDiv.classList.add("listHover");
         listButtonDiv.classList.add("navButton");
         var listButton = document.createElement("button");
         listButton.classList.add("listButton");
-        listButton.innerHTML = `${listIndex}`;
+        listButton.innerHTML = `${listIndex.name}`;
         var deleteListButton = document.createElement("button");
         deleteListButton.innerHTML = "X";
         deleteListButton.classList.add("deleteListButton");
-        deleteListButton.dataset.list = `${listIndex}`;
+        deleteListButton.dataset.list = `${listIndex.name}`;
         listNav.appendChild(listButtonDiv);
         listButtonDiv.appendChild(listButton);
         listButtonDiv.appendChild(deleteListButton);
@@ -354,6 +355,9 @@ function renderTaskView (list) {
         }
         var newTaskCard = document.createElement('div');
         newTaskCard.classList.add('taskCard');
+        var listIndex = listStorage.map(function(e) { return e.name; }).indexOf(task.list);
+        var listColor = listStorage[listIndex].color;
+        newTaskCard.style.backgroundColor = listColor;
         newTaskCard.innerHTML =     
             `<div class="TCTop">
                 <div class="TCTopLeft">
