@@ -17,7 +17,16 @@ myIcon.height = "20";
 myIcon.width = "20";
 
 //--------------- dom editors -----------------------
-
+function menuButtonClick(e) {
+    e.classList.toggle("change");
+}
+function toggleHideMenu() {
+    console.log(navContainer.style.display);
+    if(navContainer.style.display == "none"){
+        console.log("why?")
+        navContainer.style.display = "block";
+    }else {navContainer.style.display = "none"};
+}
 const listDeleteButtonClicked = (e) => {
     if(!e.target.matches(".deleteListButton")) return;
     setListToDelete(e.target.dataset.list)
@@ -393,6 +402,8 @@ const allButton = document.getElementById("allButton")
 const todayButton = document.getElementById("todayButton");
 const completedButton = document.getElementById("completedButton");
 const listNav = document.querySelector(".listNav");
+const navContainer = document.querySelector(".navContainer");
+navContainer.style.display = "none";
 const newTaskButton = document.querySelector(".newTaskButton");
 const sortBySelector = document.getElementById("sortBySelector");
 const taskFormContainer = document.querySelector(".taskFormContainer");
@@ -405,6 +416,7 @@ const listDeleteWarning = listDeletePopup.querySelector(".listDeleteWarning");
 const yesDeleteList = document.getElementById("yesDeleteList");
 const noDeleteList = document.getElementById("noDeleteList");
 const footerLink = document.getElementById("footerLink");
+const menuButton = document.querySelector(".menuButtonContainer");
 
 listNav.addEventListener("click", listButtonClicked);
 listNav.addEventListener("click", listDeleteButtonClicked);
@@ -423,6 +435,10 @@ taskViewRenderDiv.addEventListener("click", taskDateToDateField);
 taskViewRenderDiv.addEventListener("submit", updateTaskTitle);
 taskViewRenderDiv.addEventListener("click", taskNotesToTextArea);
 taskViewRenderDiv.addEventListener("click", updateTaskNotes);
+menuButton.addEventListener("click", ()=> {
+    menuButtonClick(menuButton);
+    toggleHideMenu();
+})
 addListButton.addEventListener("click", () => {
     listFormSubmit();
     createNewListForm();
