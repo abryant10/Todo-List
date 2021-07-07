@@ -95,14 +95,7 @@ header {
     justify-content: center;
     padding: 20px;
 }
-.listDelWarnButton {
-    color: white;
-    font-size: 20px;
-    justify-content: center;
-    width: 65px;
-    background-color: rgb(116, 138, 199);
-    padding: 10px;
-}
+
 .navBodyContainer {
     flex-grow: 1;
     display: flex;
@@ -144,7 +137,7 @@ header {
     text-align: start;
     background-color: transparent;
     font-size: large;
-    border-radius: 5px;
+    border-radius: 7px;
 }
 .navButton:hover {
     background-color: rgb(180, 180, 180);
@@ -162,7 +155,15 @@ header {
     font-size: large;
     padding-top: 2px;
 }
-
+.listDelWarnButton {
+    color: white;
+    font-size: 20px;
+    justify-content: center;
+    width: 65px;
+    background-color: rgb(116, 138, 199);
+    padding: 10px;
+    box-shadow: 4px 5px 10px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
 .addListForm {
     display: none;
 }
@@ -229,7 +230,8 @@ header {
 .taskViewer {
     display: flex;
     flex-direction: column;
-    margin-left: 10px;
+    justify-content: center;
+    align-items: center;
 }
 #sortBySelector {
     margin-left: 10px;
@@ -243,12 +245,12 @@ header {
     min-width: 100px;
     max-width: 250px;
     margin: 10px;
-    margin-right: 130px;
     background-color: rgb(241, 241, 241);
     border-radius: 25px;
     padding: 5px;
     padding-left: 10px;
     padding-right: 20px;
+    justify-content: center;
 }
 .closeTaskForm{
     float: right;
@@ -334,10 +336,10 @@ header {
 }
 .TCTitle {
     border: none;
-    margin-left: 5px;
+    margin-left: 4px;
+    margin-right: 14px;
     font-size: 20px;
     background: transparent;
-    min-width: none;
     cursor: pointer;
 }
 .TCTopRight {
@@ -376,6 +378,7 @@ header {
     padding: 5px;
     border-radius: 7px;
     cursor: pointer;
+    margin: 5px;
 }
 .TCNotesButton {
     align-items: center;
@@ -404,8 +407,6 @@ header {
     outline: none;
     font-family: Arial, Helvetica, sans-serif; 
     width: auto;
-}
-.deleteListButton {
 }
 .TCPriorityButtonContainer{
     display: flex;
@@ -442,6 +443,8 @@ header {
     background-color: white;
     padding: 5px;
     border-radius: 7px;
+    margin: 5px;
+
 }
 .TCchangeTitleInput {
     position: relative;
@@ -474,38 +477,71 @@ footer {
     font-size: 15px;
  }  
 /*-----------------------------------------------------------------------*/ 
-@media (min-width: 768px) {
+@media (min-width: 650px) {
     header {
         justify-content: start;
-        padding-left: 20px;
+        font-size: 30px;
+    }
+    .headerTitle {
+        padding-left: 40px;        
     }
     .menuButtonContainer {
         display: none;
-
-      }
+    }
+    .navContainer {
+        position: relative;
+        left: 0;
+        background-color: rgb(221, 221, 221);
+        min-width: 275px;
+        height: 100%;
+    }
+    .taskViewer {
+        align-items: start;
+        margin-left: 40px;
+    }
+    .taskViewRenderDiv {
+        margin: 0;
+        width: 100%;
+    }
+    .taskViewerNav {
+        justify-content: start;
+        margin-left: 30px;
+    }
+    .taskCard {
+        flex-grow: 2;
+        max-width: 550px;
+        min-width: 300px;
+    }
+    .TCTitle {
+        margin-right: 25px;
+    }
 }
-
 @media (pointer: fine) {
     /* Rules for devices with mouse here */
-
-    /* 
-.addListButton:hover {
-    background-color: rgb(180, 180, 180);
-    cursor: pointer;
+    .addListButton:hover {
+        background-color: rgb(180, 180, 180);
+        cursor: pointer;
+    }
+    .closeTaskForm:hover {
+        background-color: rgb(180, 180, 180);
+        cursor: pointer;
+    }
+    .deleteListButton:hover {
+        background: white;
+    }
+    .TCPriorButton {visibility: hidden;}
+    .TCDelete {visibility: hidden;}
+    .TCExpand {visibility: hidden;}
+    .taskCard:hover .TCPriorButton {visibility: visible;}
+    .taskCard:hover .TCDelete {visibility: visible;}
+    .taskCard:hover .TCExpand {visibility: visible;}
+    .deleteListButton {visibility: hidden;}
+    .navButton:hover .deleteListButton{visibility: visible;}
+    .TCNotesButton:hover {
+        background-color: rgb(228, 228, 228);
+        cursor: pointer;
+    }
+    .TCButton:hover {
+        background-color: rgb(228, 228, 228);
+    }
 }
-.deleteListButton:hover {
-    background: white;
-}
-.taskCard:hover .TCPriorButton {visibility: visible;}
-.taskCard:hover .TCDelete {visibility: visible;}
-.taskCard:hover .TCExpand {visibility: visible;}
-.TCNotesButton:hover {
-    background-color: rgb(228, 228, 228);
-    cursor: pointer;
-}
-.TCButton:hover {
-    background-color: rgb(228, 228, 228);
-}
- */
-
-  }

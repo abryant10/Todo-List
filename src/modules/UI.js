@@ -412,6 +412,7 @@ const noDeleteList = document.getElementById("noDeleteList");
 const footerLink = document.getElementById("footerLink");
 const menuButton = document.querySelector(".menuButtonContainer");
 const currentViewTitle = document.querySelector(".currentViewTitle");
+const closeTaskForm = document.querySelector(".closeTaskForm");
 
 listNav.addEventListener("click", listButtonClicked);
 listNav.addEventListener("click", listDeleteButtonClicked);
@@ -431,6 +432,7 @@ taskViewRenderDiv.addEventListener("submit", updateTaskTitle);
 taskViewRenderDiv.addEventListener("click", taskNotesToTextArea);
 taskViewRenderDiv.addEventListener("click", updateTaskNotes);
 menuButton.addEventListener("click", ()=> {menuButtonClick(menuButton);})
+closeTaskForm.addEventListener("click", resetTaskForm);
 addListButton.addEventListener("click", () => {
     listFormSubmit();
     createNewListForm();
