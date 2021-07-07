@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body>
-<div class="viewport">
+<div class="view">
     <div class="listDeletePopup">
         <div class="listDeleteContainer">
             <div class="listDeleteWarning"></div>
@@ -27,7 +27,7 @@
     <div class="navBodyContainer">
         <div class="navContainer">
             <div class="nav">
-                <button type="button" id="allButton" class="navButton listButton listButtonSelected listHover">All</button>
+                <button type="button" id="allButton" class="navButton listButton listButtonSelected listHover">All Tasks</button>
                 <button type="button" id="todayButton" class="navButton listButton listHover">Due Today</button>
                 <button type="button" id="completedButton"class="navButton listButton listHover">Completed</button>
             </div>
@@ -41,11 +41,14 @@
         </div>
         <div class="taskViewerContainer">
             <div class="taskViewerNav">
-                    <label for="sortTask">Sort by</label>
-                    <select name="sortTask" id="sortBySelector">
-                        <option value="priority">Priority</option>
-                        <option value="due-date">Due Date</option>
-                    </select>
+                    <div class="currentViewTitle"></div>
+                    <div>
+                        <label for="sortTask">Sort by</label>
+                        <select name="sortTask" id="sortBySelector">
+                            <option value="priority">Priority</option>
+                            <option value="due-date">Due Date</option>
+                        </select>
+                    </div>
             </div>
             <div class="taskViewer">
                 <div class="newTaskButtonContainer">
