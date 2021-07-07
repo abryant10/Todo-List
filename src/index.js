@@ -4,5 +4,5 @@ import {myIcon, renderListsToForm, renderListView, renderTaskView} from './modul
 footerLink.appendChild(myIcon);
 renderListsToForm();
 renderListView();
-renderTaskView("all");
+renderTaskView("all Tasks");
 

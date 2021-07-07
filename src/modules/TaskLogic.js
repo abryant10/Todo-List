@@ -74,7 +74,7 @@ function priorityUp (e) {
     if (!e.target.matches(".priorUp")) return;
     if (currentView == "today") return;
     if (currentView == "completed") return;
-    if(currentView == "all"){
+    if(currentView == "all Tasks"){
         if (e.target.dataset.index == 0) return;
         var index = parseInt(e.target.dataset.index);
         taskStorage.forEach(task => {
@@ -108,7 +108,7 @@ function priorityDown (e) {
     if (!e.target.matches(".priorDown")) return;
     if (currentView == "today") return;
     if (currentView == "completed") return;
-    if(currentView == "all"){
+    if(currentView == "all Tasks"){
         if (e.target.dataset.index == (taskStorage.length - 1)) return;
         var index = parseInt(e.target.dataset.index);
         taskStorage.forEach(task => {

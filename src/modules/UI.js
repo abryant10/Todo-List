@@ -6,7 +6,7 @@ import {listStorage, listFormSubmit, deleteList, listToDelete, setListToDelete} 
 
 let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
 
-let currentView =  "all";
+let currentView =  "all Tasks";
 
 let renderArray;
 
@@ -19,13 +19,7 @@ myIcon.width = "20";
 //--------------- dom editors -----------------------
 function menuButtonClick(e) {
     e.classList.toggle("change");
-}
-function toggleHideMenu() {
-    console.log(navContainer.style.display);
-    if(navContainer.style.display == "none"){
-        console.log("why?")
-        navContainer.style.display = "block";
-    }else {navContainer.style.display = "none"};
+    navContainer.classList.toggle("showNav");
 }
 const listDeleteButtonClicked = (e) => {
     if(!e.target.matches(".deleteListButton")) return;
@@ -65,7 +59,7 @@ function getRenderArray (list) {
     let today = new Date().toISOString().split('T')[0];
     let renderArray;
     switch (list) {
-        case ("all"): 
+        case ("all Tasks"): 
             switch (sortVal) {
                 case ("priority"):
                     renderArray = taskStorage.slice().sort((a, b) => a.allPriority - b.allPriority); 
@@ -142,8 +136,8 @@ function getRenderArray (list) {
     return renderArray;
 }
 function allButtonClicked () {
-    currentView = "all"
-    renderTaskView("all");
+    currentView = "all Tasks"
+    renderTaskView("all Tasks");
     listButtonHighlight();
     CheckHideNewTaskButton();
     resetTaskForm();
@@ -168,7 +162,7 @@ function listButtonHighlight(target) {
     var allListButtons = [...document.querySelectorAll(".listHover")];
     allListButtons.forEach(button => {button.classList.remove("listButtonSelected");});
     switch (currentView) {
-        case ("all"): 
+        case ("all Tasks"): 
             allButton.classList.add("listButtonSelected");
             break;
         case ("today"):
@@ -344,6 +338,7 @@ function updateTaskNotes(e) {
 }
 
 function renderTaskView (list) {
+    currentViewTitle.innerHTML = `${(currentView.charAt(0).toUpperCase() + currentView.slice(1))}`;
     renderArray = getRenderArray(list); 
     clearTaskView();
     renderArray.forEach(task => { 
@@ -358,7 +353,7 @@ function renderTaskView (list) {
         if(currentView == "today") {priorityButtons = ""};
         let renderedTaskDate;
         if(task.dueDate != "") {
-            renderedTaskDate = format(parseISO(task.dueDate), 'M/d/y')
+            renderedTaskDate = format(parseISO(task.dueDate), 'M/d/yy')
         }else {
             renderedTaskDate = "Due Date";
         }
@@ -403,7 +398,6 @@ const todayButton = document.getElementById("todayButton");
 const completedButton = document.getElementById("completedButton");
 const listNav = document.querySelector(".listNav");
 const navContainer = document.querySelector(".navContainer");
-navContainer.style.display = "none";
 const newTaskButton = document.querySelector(".newTaskButton");
 const sortBySelector = document.getElementById("sortBySelector");
 const taskFormContainer = document.querySelector(".taskFormContainer");
@@ -417,6 +411,7 @@ const yesDeleteList = document.getElementById("yesDeleteList");
 const noDeleteList = document.getElementById("noDeleteList");
 const footerLink = document.getElementById("footerLink");
 const menuButton = document.querySelector(".menuButtonContainer");
+const currentViewTitle = document.querySelector(".currentViewTitle");
 
 listNav.addEventListener("click", listButtonClicked);
 listNav.addEventListener("click", listDeleteButtonClicked);
@@ -435,10 +430,7 @@ taskViewRenderDiv.addEventListener("click", taskDateToDateField);
 taskViewRenderDiv.addEventListener("submit", updateTaskTitle);
 taskViewRenderDiv.addEventListener("click", taskNotesToTextArea);
 taskViewRenderDiv.addEventListener("click", updateTaskNotes);
-menuButton.addEventListener("click", ()=> {
-    menuButtonClick(menuButton);
-    toggleHideMenu();
-})
+menuButton.addEventListener("click", ()=> {menuButtonClick(menuButton);})
 addListButton.addEventListener("click", () => {
     listFormSubmit();
     createNewListForm();
