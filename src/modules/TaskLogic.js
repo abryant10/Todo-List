@@ -1,5 +1,6 @@
-import { taskForm, taskStorage, renderTaskView, taskFormContainer, currentView, renderArray} from "./UI";
+import { taskForm, taskStorage, renderTaskView, taskFormContainer, renderArray} from "./UI";
 import {updateCompletedPriority, setCompletedStorage, completedTasks} from "./Completed"
+import { currentView } from "./ListLogic";
 
 const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
     return{

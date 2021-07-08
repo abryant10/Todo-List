@@ -1,10 +1,11 @@
-import { listFormReset, renderListsToForm, renderListView, renderTaskView, resetListDeletePopup, addListForm, currentView} from "./UI";
+import { listFormReset, renderListsToForm, renderListView, renderTaskView, resetListDeletePopup, addListForm} from "./UI";
 import {updateAllPriority, setTaskStorage, deleteAllTaskFromDeadList} from "./TaskLogic";
 
 
 let listStorage = JSON.parse(localStorage.getItem('listStorage')) || [{"name":"Reminders", "color":"rgb(241, 241, 241)"}];
-
 let listToDelete;
+let currentView =  "all Tasks";
+
 
 const randomBetween = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
 
@@ -19,7 +20,9 @@ const List = (name) => {
         color
     }
 }
-
+function setCurrentView(view) {
+    currentView = view;
+}
 function setListToDelete(list) {
     var listIndex = listStorage.map(function(e) { return e.name; }).indexOf(list);
     listToDelete = listStorage[listIndex].name;
@@ -56,4 +59,4 @@ function deleteList () {
 }
 
 
-export {listFormSubmit, deleteList, listStorage, setListToDelete, listToDelete};
+export {listFormSubmit, deleteList, listStorage, setListToDelete, listToDelete, setCurrentView, currentView};

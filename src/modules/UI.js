@@ -2,20 +2,17 @@ import Icon from '../styles/GitHub-Mark-Light-120px-plus.png';
 import { format, parseISO } from 'date-fns';
 import {taskFormSubmit, deleteTask, setTaskStorage, priorityDown, priorityUp, } from './TaskLogic';
 import {completedTasks, completeTask} from '/src/modules/Completed';
-import {listStorage, listFormSubmit, deleteList, listToDelete, setListToDelete} from './ListLogic';
+import {listStorage, listFormSubmit, deleteList, listToDelete, setListToDelete, setCurrentView, currentView} from './ListLogic';
 
 let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
 
-let currentView =  "all Tasks";
-
 let renderArray;
-
+// github link
 const myIcon = new Image();
 myIcon.src = Icon;
 myIcon.alt="git hub mark";
 myIcon.height = "20";
 myIcon.width = "20";
-
 //--------------- dom editors -----------------------
 function menuButtonClick(e) {
     e.classList.toggle("change");
@@ -39,7 +36,7 @@ function resetListDeletePopup() {
 }
 function listButtonClicked (e) {
     if(!e.target.matches(".listButton")) return;
-    currentView = e.target.innerHTML;
+    setCurrentView(e.target.innerHTML);
     renderTaskView(currentView);
     renderListsToForm();
     listButtonHighlight(e.target);
@@ -136,22 +133,21 @@ function getRenderArray (list) {
     return renderArray;
 }
 function allButtonClicked () {
-    currentView = "all Tasks"
+    setCurrentView("all Tasks");
     renderTaskView("all Tasks");
     listButtonHighlight();
     CheckHideNewTaskButton();
     resetTaskForm();
 }
-
 function todayButtonClicked () {
-    currentView = "today";
+    setCurrentView("today");
     renderTaskView("today");
     listButtonHighlight()
     CheckHideNewTaskButton();
     resetTaskForm();
 }
 function completedButtonClicked() {
-    currentView = "completed"
+    setCurrentView("completed");
     renderTaskView("completed");
     listButtonHighlight()
     CheckHideNewTaskButton();
@@ -187,14 +183,12 @@ function expandCardInfo (e) {
         targetBottom.classList.add("expandedInfo");
     }
 }    
-
 function createTaskForm () {
     taskForm.reset();
     renderListsToForm();
     taskFormContainer.style.display = "block";    
     taskText.focus();
 }
-
 function createNewListForm () {
     addListForm.reset();
     addListForm.style.display = "block";
@@ -208,6 +202,7 @@ function resetListForm () {
     addListForm.reset();
     addListForm.style.display = "none";
 }
+//when a new list is made, add it to the new task form
 function renderListsToForm () {
     listSelector.innerHTML = "";
     listStorage.forEach(listIndex => {
@@ -224,6 +219,7 @@ function renderListsToForm () {
         }
     })
 }
+//renders the list of list in the list nav
 function renderListView () {
     listNav.innerHTML = "";
     listStorage.forEach(listIndex => {
@@ -248,14 +244,15 @@ function clearTaskView () {
         taskViewRenderDiv.removeChild(taskViewRenderDiv.lastChild);
     }
 }
+// submits the new list form if you lick away
 function windowClickListFormSubmit(e) {
     if (e.target.matches(".addListButton")) return;
     if (e.target.matches(".addListText")) return;
     if (addListForm.style.display == "block") {
         listFormSubmit();
     }
-
 }
+// when you click on a task's title, a text input apears to edit it
 function taskTitleToInputField(e) {
     if(!e.target.matches(".TCTitle")) return;
     if(currentView == "completed") return;
@@ -272,6 +269,7 @@ function taskTitleToInputField(e) {
     parent.appendChild(form);
     form.appendChild(input);
 }
+//when you click on a task's date a new date form apears in it's place 
 function taskDateToDateField(e) {
     if(!e.target.matches(".TCDate")) return;
     if(currentView == "completed") return;
@@ -288,6 +286,7 @@ function taskDateToDateField(e) {
     parent.insertBefore(form, parent.firstChild);
     form.appendChild(input);
 }
+// submits a change of date for a task
 function updateTaskDate(e) {
     if(e.target.matches(".TCDate")) return;
     if(e.target.matches(".TCchangeDateInput")) return;
@@ -300,6 +299,7 @@ function updateTaskDate(e) {
     renderTaskView(currentView);
     }
 }
+//submits a change of title for a task
 function updateTaskTitle(e) {
     e.preventDefault();
     if(!e.target.matches(".TCchangeTitleForm")) return;
@@ -308,6 +308,7 @@ function updateTaskTitle(e) {
     setTaskStorage();
     renderTaskView(currentView);
 }
+//when you click on a task's notes a field apears to edit them. 
 function taskNotesToTextArea(e) {
     if(!e.target.matches(".TCNotes")) return;
     if(currentView == "completed") return;
@@ -327,6 +328,7 @@ function taskNotesToTextArea(e) {
     form.appendChild(textArea);
     form.appendChild(submit);
 }
+// submits a change to a task's notes
 function updateTaskNotes(e) {
     if(!e.target.matches(".TCNotesButton")) return;
     e.preventDefault();
@@ -336,7 +338,7 @@ function updateTaskNotes(e) {
     setTaskStorage();
     renderTaskView(currentView);
 }
-
+// takes sorting information and displays the proper tasks
 function renderTaskView (list) {
     currentViewTitle.innerHTML = `${(currentView.charAt(0).toUpperCase() + currentView.slice(1))}`;
     renderArray = getRenderArray(list); 
@@ -389,7 +391,7 @@ function renderTaskView (list) {
     });
 }
 
-// -------------- dom listeners ----------------------------------------------------
+//----------------dom elements------------------------------
 const addListButton = document.querySelector(".addListButton");
 const addListForm = document.querySelector(".addListForm");
 const addListText = document.getElementById("addListText");
@@ -413,7 +415,7 @@ const footerLink = document.getElementById("footerLink");
 const menuButton = document.querySelector(".menuButtonContainer");
 const currentViewTitle = document.querySelector(".currentViewTitle");
 const closeTaskForm = document.querySelector(".closeTaskForm");
-
+// -------------- dom listeners ----------------------------------------------------
 listNav.addEventListener("click", listButtonClicked);
 listNav.addEventListener("click", listDeleteButtonClicked);
 yesDeleteList.addEventListener("click", deleteList);
@@ -469,6 +471,6 @@ window.addEventListener("click", (e) => {
     windowClickListFormSubmit(e);
 });
 
-export {taskForm, taskStorage, renderTaskView, taskFormContainer, currentView, 
+export {taskForm, taskStorage, renderTaskView, taskFormContainer, 
     renderArray, listFormReset, resetListDeletePopup, addListForm, 
     renderListsToForm, renderListView, myIcon, footerLink};
