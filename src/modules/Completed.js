@@ -4,11 +4,11 @@ import { currentView } from "./ListLogic";
 
 var completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
 
-function updateCompletedArray(data) {
+const updateCompletedArray = function updateCompletedArray (data) {
     completedTasks = completedTasks.concat(data);
 }
 
-function completeTask(e) {
+const completeTask = function completeTask (e) {
     if(!e.target.matches(".TCCheck")) return;
     var task = taskStorage.splice((e.target.dataset.index), 1);
     updateCompletedArray(task);
@@ -19,10 +19,10 @@ function completeTask(e) {
     setTaskStorage();
     renderTaskView(currentView);
 }
-function setCompletedStorage() {
+const setCompletedStorage = function setCompletedStorage () {
     localStorage.setItem("completedTasks", JSON.stringify(completedTasks));
 }
-function updateCompletedPriority() {
+const updateCompletedPriority = function updateCompletedPriority () {
     completedTasks.forEach(task => {
         task.allPriority = completedTasks.indexOf(task);
     }) 

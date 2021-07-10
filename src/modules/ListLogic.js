@@ -20,19 +20,19 @@ const List = (name) => {
         color
     }
 }
-function setCurrentView(view) {
+const setCurrentView = function setCurrentView (view) {
     currentView = view;
 }
-function setListToDelete(list) {
+const setListToDelete = function setListToDelete (list) {
     var listIndex = listStorage.map(function(e) { return e.name; }).indexOf(list);
     listToDelete = listStorage[listIndex].name;
 };
 
-function setListStorage () {
+const setListStorage = function setListStorage () {
     localStorage.setItem("listStorage", JSON.stringify(listStorage));
 }
 
-function listFormSubmit () {
+const listFormSubmit = function listFormSubmit () {
     var listText = (addListForm.querySelector('[name=addListText]')).value;
     if (listText == "") {
         listFormReset();
@@ -45,7 +45,7 @@ function listFormSubmit () {
     renderListView();
 }
 
-function deleteList () {
+const deleteList = function deleteList () {
     var listIndex = listStorage.map(function(e) { return e.name; }).indexOf(listToDelete);
     listStorage.splice(listIndex, 1);
     setListStorage();

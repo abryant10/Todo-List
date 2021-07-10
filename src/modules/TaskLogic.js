@@ -13,7 +13,7 @@ const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
     }
 }
 
-function taskFormSubmit () {
+const taskFormSubmit = function taskFormSubmit () {
     var taskText = (taskForm.querySelector('[name=taskText]')).value;
     if (taskText == "") return;
     const taskDueDate = (taskForm.querySelector('[name=taskDueDate]')).value;
@@ -27,15 +27,15 @@ function taskFormSubmit () {
     taskFormContainer.style.display = "none";
     taskForm.reset();
 }
-function setTaskStorage () {
+const setTaskStorage = function setTaskStorage () {
     localStorage.setItem("taskStorage", JSON.stringify(taskStorage));
 }
-function checkListPriority (list) {
+const checkListPriority = function checkListPriority (list) {
     var listFilter = taskStorage.filter(task => task.list == list);
     const priority = (listFilter.length +1);
     return priority;
 }
-function deleteTask (e) {
+const deleteTask = function deleteTask (e) {
     if (!e.target.matches(".TCDelete")) return;
     if(currentView == "completed") {
         completedTasks.splice((e.target.dataset.index), 1);
@@ -52,26 +52,26 @@ function deleteTask (e) {
         renderTaskView(currentView);
     }
 }
-function updateAllPriority() {
+const updateAllPriority = function updateAllPriority () {
     taskStorage.forEach(task => {
         task.allPriority = (taskStorage.indexOf(task));
     }) 
 }
-function updateListPriority(list, index) {
+const updateListPriority = function updateListPriority (list, index) {
     taskStorage.forEach(task => {
         if(task.list != list) return;
         if(task.listPriority < index) return;
         task.listPriority--;
     })
 }
-function deleteAllTaskFromDeadList(list){
+const deleteAllTaskFromDeadList = function deleteAllTaskFromDeadList (list) {
     taskStorage.forEach(task => {
         if(task.list == list) {
             taskStorage.splice(taskStorage.indexOf(task), 1);
         }
     })
 }
-function priorityUp (e) {
+const priorityUp = function priorityUp (e) {
     if (!e.target.matches(".priorUp")) return;
     if (currentView == "today") return;
     if (currentView == "completed") return;
@@ -105,7 +105,7 @@ function priorityUp (e) {
     setTaskStorage();
     renderTaskView(currentView);
 }
-function priorityDown (e) {
+const priorityDown = function priorityDown (e) {
     if (!e.target.matches(".priorDown")) return;
     if (currentView == "today") return;
     if (currentView == "completed") return;

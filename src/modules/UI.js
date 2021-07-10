@@ -14,43 +14,43 @@ myIcon.alt="git hub mark";
 myIcon.height = "20";
 myIcon.width = "20";
 //--------------- dom editors -----------------------
-function menuButtonClick(e) {
+const menuButtonClick = function menuButtonClick (e) {
     e.classList.toggle("change");
     navContainer.classList.toggle("showNav");
 }
-const listDeleteButtonClicked = (e) => {
+const listDeleteButtonClicked = function listDeleteButtonClicked (e) {
     if(!e.target.matches(".deleteListButton")) return;
     setListToDelete(e.target.dataset.list)
     listDeletePopup.style.display = "block";
     listDeleteWarning.innerHTML = `Are you sure you want to delete <b>${listToDelete}</b> and all of it's tasks?`;
 }
-function clearDeleteList () {
+const clearDeleteList = function clearDeleteList () {
     listDeletePopup.style.display = "none";
 }
-function listFormReset() {
+const listFormReset = function listFormReset () {
     addListForm.reset();
     addListForm.style.display = "none";
 }
-function resetListDeletePopup() {
+const resetListDeletePopup = function resetListDeletePopup () {
     listDeletePopup.style.display = "none";
 }
-function listButtonClicked (e) {
+const listButtonClicked = function listButtonClicked (e) {
     if(!e.target.matches(".listButton")) return;
     setCurrentView(e.target.innerHTML);
     renderTaskView(currentView);
     renderListsToForm();
     listButtonHighlight(e.target);
-    CheckHideNewTaskButton();
+    checkHideNewTaskButton();
     resetTaskForm();
 }
 //hide the new task button so tasks are not made in completed view
-function CheckHideNewTaskButton() {
+const checkHideNewTaskButton = function checkHideNewTaskButton () {
     newTaskButton.style.display = "block";
     if (currentView != "completed") return;
     newTaskButton.style.display = "none";
 }
 //logic that sorts user data for task card creation
-function getRenderArray (list) {
+const getRenderArray = function getRenderArray (list) {
     var sortVal = sortBySelector.value;
     let filteredArray;
     let today = new Date().toISOString().split('T')[0];
@@ -132,29 +132,29 @@ function getRenderArray (list) {
     }
     return renderArray;
 }
-function allButtonClicked () {
+const allButtonClicked = function allButtonClicked () {
     setCurrentView("all Tasks");
     renderTaskView("all Tasks");
     listButtonHighlight();
-    CheckHideNewTaskButton();
+    checkHideNewTaskButton();
     resetTaskForm();
 }
-function todayButtonClicked () {
+const todayButtonClicked = function todayButtonClicked () {
     setCurrentView("today");
     renderTaskView("today");
     listButtonHighlight()
-    CheckHideNewTaskButton();
+    checkHideNewTaskButton();
     resetTaskForm();
 }
-function completedButtonClicked() {
+const completedButtonClicked = function completedButtonClicked () {
     setCurrentView("completed");
     renderTaskView("completed");
     listButtonHighlight()
-    CheckHideNewTaskButton();
+    checkHideNewTaskButton();
     resetTaskForm();
 }
 //highlight list buttons when clicked
-function listButtonHighlight(target) {
+const listButtonHighlight = function listButtonHighlight (target) {
     var allListButtons = [...document.querySelectorAll(".listHover")];
     allListButtons.forEach(button => {button.classList.remove("listButtonSelected");});
     switch (currentView) {
@@ -172,7 +172,7 @@ function listButtonHighlight(target) {
             break;
     }
 }
-function expandCardInfo (e) {
+const expandCardInfo = function expandCardInfo (e) {
     if (!e.target.matches(".TCExpand")) return;
     var index = e.target.dataset.info;
     var target = e.currentTarget;
@@ -183,27 +183,27 @@ function expandCardInfo (e) {
         targetBottom.classList.add("expandedInfo");
     }
 }    
-function createTaskForm () {
+const createTaskForm = function createTaskForm () {
     taskForm.reset();
     renderListsToForm();
     taskFormContainer.style.display = "block";    
     taskText.focus();
 }
-function createNewListForm () {
+const createNewListForm = function createNewListForm () {
     addListForm.reset();
     addListForm.style.display = "block";
     addListText.focus();
 }
-function resetTaskForm () {
+const resetTaskForm = function resetTaskForm () {
     taskForm.reset();
     taskFormContainer.style.display = "none";
 }
-function resetListForm () {
+const resetListForm = function resetListForm () {
     addListForm.reset();
     addListForm.style.display = "none";
 }
 //when a new list is made, add it to the new task form
-function renderListsToForm () {
+const renderListsToForm = function renderListsToForm () {
     listSelector.innerHTML = "";
     listStorage.forEach(listIndex => {
         if (listIndex.name == currentView){
@@ -220,7 +220,7 @@ function renderListsToForm () {
     })
 }
 //renders the list of list in the list nav
-function renderListView () {
+const renderListView = function renderListView () {
     listNav.innerHTML = "";
     listStorage.forEach(listIndex => {
         var listButtonDiv = document.createElement("div");
@@ -239,13 +239,13 @@ function renderListView () {
         listButtonDiv.appendChild(deleteListButton);
     })
 }
-function clearTaskView () {
+const clearTaskView = function clearTaskView () {
     while(taskViewRenderDiv.firstChild) {
         taskViewRenderDiv.removeChild(taskViewRenderDiv.lastChild);
     }
 }
 // submits the new list form if you lick away
-function windowClickListFormSubmit(e) {
+const windowClickListFormSubmit = function windowClickListFormSubmit (e) {
     if (e.target.matches(".addListButton")) return;
     if (e.target.matches(".addListText")) return;
     if (addListForm.style.display == "block") {
@@ -253,7 +253,7 @@ function windowClickListFormSubmit(e) {
     }
 }
 // when you click on a task's title, a text input apears to edit it
-function taskTitleToInputField(e) {
+const taskTitleToInputField = function taskTitleToInputField (e) {
     if(!e.target.matches(".TCTitle")) return;
     if(currentView == "completed") return;
     let index = e.target.dataset.index;
@@ -270,7 +270,7 @@ function taskTitleToInputField(e) {
     form.appendChild(input);
 }
 //when you click on a task's date a new date form apears in it's place 
-function taskDateToDateField(e) {
+const taskDateToDateField = function taskDateToDateField (e) {
     if(!e.target.matches(".TCDate")) return;
     if(currentView == "completed") return;
     let index = e.target.dataset.index;
@@ -287,7 +287,7 @@ function taskDateToDateField(e) {
     form.appendChild(input);
 }
 // submits a change of date for a task
-function updateTaskDate(e) {
+const updateTaskDate = function updateTaskDate (e) {
     if(e.target.matches(".TCDate")) return;
     if(e.target.matches(".TCchangeDateInput")) return;
     let dateInput = document.querySelectorAll(".TCchangeDateInput");
@@ -300,7 +300,7 @@ function updateTaskDate(e) {
     }
 }
 //submits a change of title for a task
-function updateTaskTitle(e) {
+const updateTaskTitle = function updateTaskTitle (e) {
     e.preventDefault();
     if(!e.target.matches(".TCchangeTitleForm")) return;
     let input = e.target.querySelector("input");
@@ -309,7 +309,7 @@ function updateTaskTitle(e) {
     renderTaskView(currentView);
 }
 //when you click on a task's notes a field apears to edit them. 
-function taskNotesToTextArea(e) {
+const taskNotesToTextArea = function taskNotesToTextArea (e) {
     if(!e.target.matches(".TCNotes")) return;
     if(currentView == "completed") return;
     let index = e.target.dataset.index;
@@ -329,7 +329,7 @@ function taskNotesToTextArea(e) {
     form.appendChild(submit);
 }
 // submits a change to a task's notes
-function updateTaskNotes(e) {
+const updateTaskNotes = function updateTaskNotes (e) {
     if(!e.target.matches(".TCNotesButton")) return;
     e.preventDefault();
     let parent = e.target.parentElement;
@@ -339,7 +339,7 @@ function updateTaskNotes(e) {
     renderTaskView(currentView);
 }
 // takes sorting information and displays the proper tasks
-function renderTaskView (list) {
+const renderTaskView = function renderTaskView (list) {
     currentViewTitle.innerHTML = `${(currentView.charAt(0).toUpperCase() + currentView.slice(1))}`;
     renderArray = getRenderArray(list); 
     clearTaskView();
@@ -454,14 +454,14 @@ taskForm.addEventListener('submit', (event) => {
     event.preventDefault();
     taskFormSubmit();
 }); 
-window.addEventListener('keydown', function(e) {
+window.addEventListener('keydown', (e) => {
   if (e.key === "Escape") {
     resetTaskForm();
     resetListForm();
     renderTaskView(currentView);
   }
 })
-window.addEventListener("keydown", function(e) {
+window.addEventListener("keydown", (e) => {
     if (taskFormContainer.style.display == "block" && e.key === "Enter") {
         taskFormSubmit();
     }
