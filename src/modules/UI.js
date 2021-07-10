@@ -1,11 +1,23 @@
 import Icon from '../styles/GitHub-Mark-Light-120px-plus.png';
-import { format, parseISO } from 'date-fns';
-import {taskFormSubmit, deleteTask, setTaskStorage, priorityDown, priorityUp, } from './TaskLogic';
+import {format, parseISO } from 'date-fns';
+import {
+    taskFormSubmit, 
+    deleteTask, 
+    setTaskStorage, 
+    priorityDown, 
+    priorityUp
+} from './TaskLogic';
 import {completedTasks, completeTask} from '/src/modules/Completed';
-import {listStorage, listFormSubmit, deleteList, listToDelete, setListToDelete, setCurrentView, currentView} from './ListLogic';
-
+import {
+    listStorage, 
+    listFormSubmit, 
+    deleteList, 
+    listToDelete, 
+    setListToDelete, 
+    setCurrentView, 
+    currentView
+} from './ListLogic';
 let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
-
 let renderArray;
 // github link
 const myIcon = new Image();
@@ -390,7 +402,6 @@ const renderTaskView = function renderTaskView (list) {
         taskViewRenderDiv.appendChild(newTaskCard);
     });
 }
-
 //----------------dom elements------------------------------
 const addListButton = document.querySelector(".addListButton");
 const addListForm = document.querySelector(".addListForm");
@@ -444,7 +455,6 @@ addListForm.addEventListener('submit', (event) => {
     event.preventDefault();
     listFormSubmit();
 });
-
 newTaskButton.addEventListener("click", () => {
     taskFormSubmit();
     createTaskForm();
@@ -470,7 +480,17 @@ window.addEventListener("click", (e) => {
     updateTaskDate(e);
     windowClickListFormSubmit(e);
 });
-
-export {taskForm, taskStorage, renderTaskView, taskFormContainer, 
-    renderArray, listFormReset, resetListDeletePopup, addListForm, 
-    renderListsToForm, renderListView, myIcon, footerLink};
+export {
+    taskForm, 
+    taskStorage, 
+    renderTaskView, 
+    taskFormContainer, 
+    renderArray, 
+    listFormReset, 
+    resetListDeletePopup, 
+    addListForm, 
+    renderListsToForm, 
+    renderListView, 
+    myIcon, 
+    footerLink
+};

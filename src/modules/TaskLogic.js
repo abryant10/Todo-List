@@ -1,7 +1,16 @@
-import { taskForm, taskStorage, renderTaskView, taskFormContainer, renderArray} from "./UI";
-import {updateCompletedPriority, setCompletedStorage, completedTasks} from "./Completed"
+import { 
+    taskForm, 
+    taskStorage, 
+    renderTaskView, 
+    taskFormContainer, 
+    renderArray
+} from "./UI";
+import {
+    updateCompletedPriority, 
+    setCompletedStorage, 
+    completedTasks
+} from "./Completed"
 import { currentView } from "./ListLogic";
-
 const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
     return{
         title, 
@@ -12,7 +21,6 @@ const Task = (title, list, notes, dueDate, listPriority, allPriority) => {
         allPriority,
     }
 }
-
 const taskFormSubmit = function taskFormSubmit () {
     var taskText = (taskForm.querySelector('[name=taskText]')).value;
     if (taskText == "") return;
@@ -139,5 +147,13 @@ const priorityDown = function priorityDown (e) {
     setTaskStorage();
     renderTaskView(currentView);
 }
-
-export {taskFormSubmit, deleteTask, updateAllPriority, updateListPriority, setTaskStorage, priorityUp, priorityDown, deleteAllTaskFromDeadList};
+export {
+    taskFormSubmit, 
+    deleteTask, 
+    updateAllPriority, 
+    updateListPriority, 
+    setTaskStorage, 
+    priorityUp, 
+    priorityDown, 
+    deleteAllTaskFromDeadList
+};
