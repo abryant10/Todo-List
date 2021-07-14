@@ -9,7 +9,7 @@ import {
   setTaskStorage,
 } from './TaskLogic';
 
-import { currentView } from './ListLogic';
+import { getCurrentView } from './ListLogic';
 
 let completedTasks = JSON.parse(localStorage.getItem('completedTasks')) || [];
 
@@ -42,11 +42,10 @@ const completeTask = function completeTask(e) {
   updateListPriority();
   updateCompletedPriority();
   setTaskStorage();
-  renderTaskView(currentView);
+  renderTaskView(getCurrentView());
 };
 
 export {
-  // completedTasks,
   completedTaskSplice,
   getCompletedTasks,
   completeTask,

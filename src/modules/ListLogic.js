@@ -14,9 +14,13 @@ import {
   deleteAllTaskFromDeadList,
 } from './TaskLogic';
 
-let listStorage = JSON.parse(localStorage.getItem('listStorage')) || [{"name":"Reminders", "color":"rgb(241, 241, 241)"}];
+const listStorage = JSON.parse(localStorage.getItem('listStorage')) || [{ name: 'Reminders', color: 'rgb(241, 241, 241)' }];
 let listToDelete;
-let currentView =  "all Tasks";
+let currentView = 'all Tasks';
+
+const getCurrentView = function getCurrentView() { return currentView; };
+const getListToDelete = function getListToDelete() { return listToDelete; };
+const getListStorage = function getListStorage() { return listStorage; };
 
 const randomBetween = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
 
@@ -76,9 +80,9 @@ const deleteList = function deleteList() {
 export {
   listFormSubmit,
   deleteList,
-  listStorage,
+  getListStorage,
   setListToDelete,
-  listToDelete,
+  getListToDelete,
   setCurrentView,
-  currentView,
+  getCurrentView,
 };
