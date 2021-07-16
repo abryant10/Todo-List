@@ -10,7 +10,7 @@ import {
 
 import {
   updateAllPriority,
-  setTaskStorage,
+  saveTaskStorage,
   deleteAllTaskFromDeadList,
 } from './TaskLogic';
 
@@ -72,7 +72,7 @@ const deleteList = function deleteList() {
   renderListsToForm();
   deleteAllTaskFromDeadList(listToDelete);
   updateAllPriority();
-  setTaskStorage();
+  saveTaskStorage();
   renderTaskView(currentView);
   resetListDeletePopup();
 };

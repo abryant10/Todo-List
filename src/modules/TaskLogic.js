@@ -1,6 +1,5 @@
 import {
   taskForm,
-  taskStorage,
   renderTaskView,
   taskFormContainer,
   getRenderArray,
@@ -13,6 +12,12 @@ import {
 } from './Completed';
 
 import { getCurrentView } from './ListLogic';
+
+let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
+
+const getTaskStorage = function getTaskStorage() { return taskStorage; };
+
+const setTaskStorage = function setTaskStorage(array) { taskStorage = array; };
 
 const Task = (title, list, notes, dueDate, listPriority, allPriority) => (
   {
@@ -30,7 +35,7 @@ const checkListPriority = function checkListPriority(list) {
   return priority;
 };
 
-const setTaskStorage = function setTaskStorage() {
+const saveTaskStorage = function saveTaskStorage() {
   localStorage.setItem('taskStorage', JSON.stringify(taskStorage));
 };
 
@@ -43,7 +48,7 @@ const taskFormSubmit = function taskFormSubmit() {
   const priority = (checkListPriority(taskList));
   const task = Task(taskText, taskList, taskNotes, taskDueDate, priority, (taskStorage.length));
   taskStorage.push(task);
-  setTaskStorage();
+  saveTaskStorage(taskStorage);
   renderTaskView(getCurrentView());
   taskFormContainer.style.display = 'none';
   taskForm.reset();
@@ -78,17 +83,19 @@ const deleteTask = function deleteTask(e) {
     taskStorage.splice((e.target.dataset.index), 1);
     updateAllPriority();
     updateListPriority(listName, index);
-    setTaskStorage();
+    saveTaskStorage(taskStorage);
     renderTaskView(getCurrentView());
   }
 };
 
 const deleteAllTaskFromDeadList = function deleteAllTaskFromDeadList(list) {
+  const tempTaskStorage = [];
   taskStorage.forEach((task) => {
-    if (task.list === list) {
-      taskStorage.splice(taskStorage.indexOf(task), 1);
+    if (task.list !== list) {
+      tempTaskStorage.push(task);
     }
   });
+  setTaskStorage(tempTaskStorage);
 };
 
 const priorityUp = function priorityUp(e) {
@@ -125,7 +132,7 @@ const priorityUp = function priorityUp(e) {
     });
   }
   window.taskStorage = taskStorage.sort((a, b) => a.allPriority - b.allPriority);
-  setTaskStorage();
+  saveTaskStorage(taskStorage);
   renderTaskView(view);
 };
 
@@ -164,7 +171,7 @@ const priorityDown = function priorityDown(e) {
     });
   }
   window.taskStorage = taskStorage.sort((a, b) => a.allPriority - b.allPriority);
-  setTaskStorage();
+  saveTaskStorage(taskStorage);
   renderTaskView(view);
 };
 
@@ -173,7 +180,9 @@ export {
   deleteTask,
   updateAllPriority,
   updateListPriority,
+  saveTaskStorage,
   setTaskStorage,
+  getTaskStorage,
   priorityUp,
   priorityDown,
   deleteAllTaskFromDeadList,

@@ -3,7 +3,9 @@ import Icon from '../styles/GitHub-Mark-Light-120px-plus.png';
 import {
   taskFormSubmit,
   deleteTask,
+  saveTaskStorage,
   setTaskStorage,
+  getTaskStorage,
   priorityDown,
   priorityUp,
 } from './TaskLogic';
@@ -19,8 +21,6 @@ import {
   setCurrentView,
   getCurrentView,
 } from './ListLogic';
-
-let taskStorage = JSON.parse(localStorage.getItem('taskStorage')) || [];
 
 let renderArray;
 
@@ -94,6 +94,7 @@ const checkHideNewTaskButton = function checkHideNewTaskButton() {
 
 // logic that sorts user data for task card creation
 const makeRenderArray = function makeRenderArray(list) {
+  const tasks = getTaskStorage();
   const completedTaskArray = getCompletedTasks();
   const sortVal = sortBySelector.value;
   let filteredArray;
@@ -102,10 +103,10 @@ const makeRenderArray = function makeRenderArray(list) {
     case ('all Tasks'):
       switch (sortVal) {
         case ('priority'):
-          renderArray = taskStorage.slice().sort((a, b) => a.allPriority - b.allPriority);
+          renderArray = tasks.slice().sort((a, b) => a.allPriority - b.allPriority);
           break;
         case ('due-date'):
-          renderArray = taskStorage.slice().sort((a, b) => {
+          renderArray = tasks.slice().sort((a, b) => {
             const key1 = a.dueDate;
             const key2 = b.dueDate;
             if (key1 === '' && key2) { return 1; }
@@ -116,20 +117,20 @@ const makeRenderArray = function makeRenderArray(list) {
             return 1;
           });
           break;
-        default: renderArray = taskStorage;
+        default: renderArray = tasks;
       }
       break;
     case ('today'):
       switch (sortVal) {
         case ('priority'):
-          filteredArray = taskStorage.filter((task) => task.dueDate === today);
+          filteredArray = tasks.filter((task) => task.dueDate === today);
           renderArray = filteredArray.slice().sort((a, b) => a.allPriority - b.allPriority);
           break;
         case ('due-date'):
-          filteredArray = taskStorage.filter((task) => task.dueDate === today);
+          filteredArray = tasks.filter((task) => task.dueDate === today);
           renderArray = filteredArray.slice().sort((a, b) => a.allPriority - b.allPriority);
           break;
-        default: renderArray = taskStorage;
+        default: renderArray = tasks;
       }
       break;
     case ('completed'):
@@ -149,17 +150,17 @@ const makeRenderArray = function makeRenderArray(list) {
             return 1;
           });
           break;
-        default: renderArray = taskStorage;
+        default: renderArray = tasks;
       }
       break;
     default:
       switch (sortVal) {
         case ('priority'):
-          filteredArray = taskStorage.filter((task) => task.list === list);
+          filteredArray = tasks.filter((task) => task.list === list);
           renderArray = filteredArray.slice().sort((a, b) => a.listPriority - b.listPriority);
           break;
         case ('due-date'):
-          filteredArray = taskStorage.filter((task) => task.list === list);
+          filteredArray = tasks.filter((task) => task.list === list);
           renderArray = filteredArray.slice().sort((a, b) => {
             const key1 = a.dueDate;
             const key2 = b.dueDate;
@@ -171,7 +172,7 @@ const makeRenderArray = function makeRenderArray(list) {
             return 1;
           });
           break;
-        default: renderArray = taskStorage;
+        default: renderArray = tasks;
       }
   }
 
@@ -294,9 +295,10 @@ const windowClickListFormSubmit = function windowClickListFormSubmit(e) {
 // when you click on a task's title, a text input apears to edit it
 const taskTitleToInputField = function taskTitleToInputField(e) {
   if (!e.target.matches('.TCTitle')) return;
+  const tasks = getTaskStorage();
   const view = getCurrentView();
   if (view === 'completed') return;
-  const index = e.target.dataset.index;
+  const index = parseInt((e.target.dataset.index), 10);
   const parent = e.target.parentElement;
   parent.removeChild(e.target);
   const form = document.createElement('form');
@@ -305,17 +307,18 @@ const taskTitleToInputField = function taskTitleToInputField(e) {
   input.type = 'text';
   input.classList.add('TCchangeTitleInput');
   input.dataset.index = index;
-  input.value = taskStorage[index].title;
+  input.value = tasks[index].title;
   parent.appendChild(form);
   form.appendChild(input);
 };
 
-// when you click on a task's date a new date form apears in it's place 
+// when you click on a task's date a new date form apears in it's place
 const taskDateToDateField = function taskDateToDateField(e) {
   if (!e.target.matches('.TCDate')) return;
+  const tasks = getTaskStorage();
   const view = getCurrentView();
   if (view === 'completed') return;
-  const index = e.target.dataset.index;
+  const index = parseInt((e.target.dataset.index), 10);
   const parent = e.target.parentElement;
   parent.removeChild(e.target);
   const form = document.createElement('form');
@@ -324,7 +327,7 @@ const taskDateToDateField = function taskDateToDateField(e) {
   input.type = 'date';
   input.classList.add('TCchangeDateInput');
   input.dataset.index = index;
-  input.value = taskStorage[index].dueDate;
+  input.value = tasks[index].dueDate;
   parent.insertBefore(form, parent.firstChild);
   form.appendChild(input);
 };
@@ -332,9 +335,10 @@ const taskDateToDateField = function taskDateToDateField(e) {
 // when you click on a task's notes a field apears to edit them.
 const taskNotesToTextArea = function taskNotesToTextArea(e) {
   if (!e.target.matches('.TCNotes')) return;
+  const tasks = getTaskStorage();
   const view = getCurrentView();
   if (view === 'completed') return;
-  const index = e.target.dataset.index;
+  const index = parseInt((e.target.dataset.index), 10);
   const parent = e.target.parentElement;
   parent.removeChild(e.target);
   const form = document.createElement('form');
@@ -342,7 +346,7 @@ const taskNotesToTextArea = function taskNotesToTextArea(e) {
   const textArea = document.createElement('TEXTAREA');
   textArea.classList.add('TCchangeNotesTextArea');
   textArea.dataset.index = index;
-  textArea.value = taskStorage[index].notes;
+  textArea.value = tasks[index].notes;
   const submit = document.createElement('button');
   submit.classList.add('TCNotesButton');
   submit.innerHTML = 'Save Changes';
@@ -446,12 +450,14 @@ const completedButtonClicked = function completedButtonClicked() {
 const updateTaskDate = function updateTaskDate(e) {
   if (e.target.matches('.TCDate')) return;
   if (e.target.matches('.TCchangeDateInput')) return;
+  const tasks = getTaskStorage();
   const dateInput = document.querySelectorAll('.TCchangeDateInput');
   if (dateInput.length > 0) {
     dateInput.forEach((dateField) => {
-      taskStorage[dateField.dataset.index].dueDate = dateField.value;
+      tasks[dateField.dataset.index].dueDate = dateField.value;
     });
-    setTaskStorage();
+    setTaskStorage(tasks);
+    saveTaskStorage();
     renderTaskView(getCurrentView());
   }
 };
@@ -460,9 +466,11 @@ const updateTaskDate = function updateTaskDate(e) {
 const updateTaskTitle = function updateTaskTitle(e) {
   e.preventDefault();
   if (!e.target.matches('.TCchangeTitleForm')) return;
+  const tasks = getTaskStorage();
   const input = e.target.querySelector('input');
-  taskStorage[input.dataset.index].title = input.value;
-  setTaskStorage();
+  tasks[input.dataset.index].title = input.value;
+  setTaskStorage(tasks);
+  saveTaskStorage();
   renderTaskView(getCurrentView());
 };
 
@@ -470,10 +478,12 @@ const updateTaskTitle = function updateTaskTitle(e) {
 const updateTaskNotes = function updateTaskNotes(e) {
   if (!e.target.matches('.TCNotesButton')) return;
   e.preventDefault();
+  const tasks = getTaskStorage();
   const parent = e.target.parentElement;
   const textArea = parent.querySelector('textarea');
-  taskStorage[textArea.dataset.index].notes = textArea.value;
-  setTaskStorage();
+  tasks[textArea.dataset.index].notes = textArea.value;
+  setTaskStorage(tasks);
+  saveTaskStorage();
   renderTaskView(getCurrentView());
 };
 
@@ -542,7 +552,6 @@ window.addEventListener('click', (e) => {
 
 export {
   taskForm,
-  taskStorage,
   renderTaskView,
   taskFormContainer,
   getRenderArray,

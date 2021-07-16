@@ -1,12 +1,12 @@
 import {
-  taskStorage,
   renderTaskView,
 } from './UI';
 
 import {
   updateAllPriority,
   updateListPriority,
-  setTaskStorage,
+  getTaskStorage,
+  saveTaskStorage,
 } from './TaskLogic';
 
 import { getCurrentView } from './ListLogic';
@@ -35,13 +35,14 @@ const updateCompletedPriority = function updateCompletedPriority() {
 
 const completeTask = function completeTask(e) {
   if (!e.target.matches('.TCCheck')) return;
-  const task = taskStorage.splice((e.target.dataset.index), 1);
+  const tasks = getTaskStorage();
+  const task = tasks.splice((e.target.dataset.index), 1);
   updateCompletedArray(task);
   setCompletedStorage();
   updateAllPriority();
   updateListPriority();
   updateCompletedPriority();
-  setTaskStorage();
+  saveTaskStorage();
   renderTaskView(getCurrentView());
 };
 
